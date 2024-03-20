@@ -1,19 +1,6 @@
 import mongoose,{Document,Schema} from 'mongoose'
 import Professional from '../../domain/professional'
 
-// interface Professional extends Document{
-//     firstname:string,
-//     lastname:string,
-//     email:string,
-//     password:string,
-//     city:string,
-//     job:string,
-//     experience:number,
-//     company:string,
-//     bio:string,
-//     followers:number,
-//     isBlocked:boolean
-// }
 const ProfSchema:Schema<Professional> = new mongoose.Schema({
     firstname:{
         type:String

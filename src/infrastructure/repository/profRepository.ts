@@ -1,4 +1,4 @@
-import profInterface from "../../use_case/interface/profInterface";
+import profInterface from "../../use_case/interface/IProfInterface";
 import ProfModel from "../database/profModel";
 import Professional from "../../domain/professional";
 

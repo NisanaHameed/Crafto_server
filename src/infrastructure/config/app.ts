@@ -23,7 +23,7 @@ export const createServer = () => {
         )
 
        
-        app.use('/api/user', userRoute);
+        app.use('/api/', userRoute);
         app.use('/api/professional',professionalRoute);
         app.use('/api/admin',adminRoute);
 

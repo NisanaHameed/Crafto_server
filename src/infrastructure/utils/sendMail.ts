@@ -1,5 +1,5 @@
 import nodemailer from 'nodemailer'
-import nodemailerInterface from '../../use_case/interface/nodemailerInterface'
+import nodemailerInterface from '../../use_case/interface/INodemailerInterface'
 import dotenv from 'dotenv'
 dotenv.config();
 

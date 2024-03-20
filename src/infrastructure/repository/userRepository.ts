@@ -1,5 +1,5 @@
 import User from "../../domain/user";
-import userInterface from "../../use_case/interface/userInterface";
+import userInterface from "../../use_case/interface/IUserInterface";
 import UserModel from '../database/userModel'
 
 class UserRepository implements userInterface {

@@ -2,7 +2,7 @@ import Admin from "../../domain/admin"
 import Professional from "../../domain/professional";
 import User from "../../domain/user";
 
-interface AdminInterface{
+interface IAdminInterface{
     findAdminByEmail(email:string):Promise<Admin | null>
     getUsers():Promise<User | null>
     blockUser(id:string):Promise<boolean>
@@ -10,4 +10,4 @@ interface AdminInterface{
     blockProfessional(is:string):Promise<boolean>
 }
 
-export default AdminInterface;
+export default IAdminInterface;

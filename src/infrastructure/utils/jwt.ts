@@ -1,6 +1,5 @@
 import jwt,{JwtPayload} from 'jsonwebtoken'
 import dotenv from 'dotenv'
-import User from '../../domain/user'
 dotenv.config()
 
 class JWT{
@@ -17,7 +16,9 @@ class JWT{
       }
       static verifyToken(token:string):JwtPayload | null{
         try{
+          console.log(token)
           const decoded = jwt.verify(token,this.authSecret) as JwtPayload;
+          console.log(decoded)
           return decoded;
         }catch(err){
           console.error('Error while verifying JWT token:',err);

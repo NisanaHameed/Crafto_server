@@ -1,16 +1,18 @@
 import User from '../domain/user';
-import userRepository from './interface/userInterface';
+import IUserInterface from './interface/IUserInterface';
 import SendOTP from '../infrastructure/utils/sendMail';
 import GenerateOTP from '../infrastructure/utils/otpGenerator';
 import HashPassword from '../infrastructure/utils/hashPassword';
 import JWT from '../infrastructure/utils/jwt';
 
 class Userusecase {
-    private userRepository: userRepository;
-    private GenerateOTP;
-    private sendOtp;
-    private hash;
-    constructor(userRpository: userRepository, GenerateOTP: GenerateOTP, sendOtp: SendOTP, hash: HashPassword, jwt: JWT) {
+
+    private userRepository: IUserInterface;
+    private GenerateOTP: GenerateOTP;
+    private sendOtp: SendOTP;
+    private hash: HashPassword;
+
+    constructor(userRpository: IUserInterface, GenerateOTP: GenerateOTP, sendOtp: SendOTP, hash: HashPassword, jwt: JWT) {
         this.userRepository = userRpository;
         this.GenerateOTP = GenerateOTP;
         this.sendOtp = sendOtp;
@@ -38,7 +40,13 @@ class Userusecase {
         try {
             let hashedP = await this.hash.hashPassword(user.password)
             user.password = hashedP;
-            let newUser = await this.userRepository.saveUser(user);
+            let newUser:any = await this.userRepository.saveUser(user);
+            if(newUser){
+                let token = JWT.generateToken(newUser._id, 'user');
+                return {success:true,token};
+            }else{
+                return {success:false}
+            }
             return newUser;
         } catch (err) {
             console.log(err);
@@ -49,13 +57,13 @@ class Userusecase {
         try {
             let userdata: any = await this.userRepository.findByEmail(email);
             if (userdata) {
-                if (userdata.isBlocked) {
-                    return { success: false, message: "User is blocked" }
-                }
                 let checkPassword = await this.hash.compare(password, userdata.password);
                 if (!checkPassword) {
                     return { success: false, message: "Incorrect password" }
-                } else {
+                }else if (userdata.isBlocked) {
+                    return { success: false, message: "User is blocked" }
+                }
+                 else {
                     let token = JWT.generateToken(userdata._id, 'user');
                     return { success: true, token: token };
                 }
@@ -78,19 +86,19 @@ class Userusecase {
             throw err;
         }
     }
-    async updateProfile(id:string,editedData:User){
-        try{
+    async updateProfile(id: string, editedData: User) {
+        try {
             let checkEmail = await this.userRepository.findUserById(id);
-            if(checkEmail?.email!==editedData.email){
+            if (checkEmail?.email !== editedData.email) {
                 let userExist = await this.userRepository.findByEmail(editedData.email);
-                if(userExist){
-                    return {success:false,message:"Email already exists"}
-                }else{
+                if (userExist) {
+                    return { success: false, message: "Email already exists" }
+                } else {
                     const otp = this.GenerateOTP.generateOtp();
-                    let sendMail = await this.sendOtp.sendMail(editedData.email,otp);
+                    let sendMail = await this.sendOtp.sendMail(editedData.email, otp);
                 }
             }
-        }catch(err){
+        } catch (err) {
             console.log(err);
             throw err;
         }

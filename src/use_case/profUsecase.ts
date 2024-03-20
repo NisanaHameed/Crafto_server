@@ -1,5 +1,5 @@
 import Professional from "../domain/professional";
-import profRepository from "./interface/profInterface";
+import profRepository from "./interface/IProfInterface";
 import GenerateOTP from "../infrastructure/utils/otpGenerator";
 import SendMail from "../infrastructure/utils/sendMail";
 import HashPassword from "../infrastructure/utils/hashPassword";
@@ -41,13 +41,13 @@ class ProfUsecase {
         try {
             let hashedP = await this.hash.hashPassword(prof.password);
             prof.password = hashedP;
-            let newProf:any = await this.profRepository.saveProfessional(prof);
-            console.log('savedP'+newProf);
-            if(newProf){
+            let newProf: any = await this.profRepository.saveProfessional(prof);
+            console.log('savedP' + newProf);
+            if (newProf) {
                 let token = JWT.generateToken(newProf._id, 'professional');
-                return {success:true,token}
-            }else{
-                return {success:false}
+                return { success: true, token }
+            } else {
+                return { success: false }
             }
             return newProf;
         } catch (err) {
@@ -55,25 +55,25 @@ class ProfUsecase {
             throw err;
         }
     }
-    async fillProfile(id:string,profdata:Professional){
-        try{
-            let saved = await this.profRepository.updateProfile(id,profdata);
+    async fillProfile(id: string, profdata: Professional) {
+        try {
+            let saved = await this.profRepository.updateProfile(id, profdata);
             return saved
-        }catch(err){
+        } catch (err) {
             console.log(err);
             throw err;
         }
     }
     async login(email: string, password: string) {
         try {
-            let profdata:any = await this.profRepository.findByEmail(email);
+            let profdata: any = await this.profRepository.findByEmail(email);
             if (profdata) {
-                if (profdata.isBlocked) {
-                    return { success: false, message: "User is blocked" }
-                }
+                
                 let checkPassword = await this.hash.compare(password, profdata.password);
                 if (!checkPassword) {
                     return { success: false, message: "Incorrect Password" }
+                }else if (profdata.isBlocked) {
+                    return { success: false, message: "User is blocked" }
                 } else {
                     let token = JWT.generateToken(profdata._id, 'professional');
                     return { success: true, token: token };
@@ -86,11 +86,11 @@ class ProfUsecase {
             throw err;
         }
     }
-    async getProfile(id:string){
-        try{
+    async getProfile(id: string) {
+        try {
             const profdata = await this.profRepository.findProfById(id);
             return profdata;
-        }catch(err){
+        } catch (err) {
             console.log(err);
             throw err;
         }

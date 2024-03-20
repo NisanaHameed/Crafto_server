@@ -15,8 +15,8 @@ class UserController {
             console.log(userCheck)
             if (!userCheck.data) {
                 req.app.locals.user = { name, email, mobile, password }
-
                 req.app.locals.otp = userCheck?.otp;
+                console.log(userCheck?.otp);         
                 res.status(200).json({ success: true })
             } else {
                 res.send(409).json({ success: false,message:"Email already exists" });
@@ -29,6 +29,8 @@ class UserController {
 
     async verifyOTP(req: Request, res: Response) {
         try {
+            console.log('in verifyotp');
+            
             let enteredOtp = req.body.otp;
             let otp = req.app.locals.otp;
             console.log(enteredOtp)
@@ -37,10 +39,14 @@ class UserController {
             if (enteredOtp === otp) {
                 let userdata = req.app.locals.user;
                 let saveduser: any = await this.Userusecase.saveUSer(userdata);
-                if (saveduser) {
-                    res.status(200).json({ success: true })
+                if (saveduser.success) {
+                    res.cookie('userToken',saveduser.token,{
+                        expires:new Date(Date.now()+25892000000),
+                        httpOnly:true
+                    })
+                    res.status(200).json(saveduser)
                 } else {
-                    res.status(500).json({ success: false })
+                    res.status(500).json({ success: false });
                 }
             } else {
                 console.log('wrong otp');
@@ -58,13 +64,17 @@ class UserController {
             let userCheck: any = await this.Userusecase.login(email, password);
             console.log(userCheck)
             if (userCheck.success) {
-                res.status(200).json({ userCheck })
+                res.cookie('userToken',userCheck.token,{
+                    expires:new Date(Date.now()+25892000000),
+                    httpOnly:true
+                })
+                res.status(200).json({success:true,token:userCheck.token })
             } else {
-                res.status(401).json({ userCheck })
+                res.status(402).json({message:userCheck.message})
             }
         } catch (err) {
             console.log(err);
-            res.status(500).json({ success: false, message: 'Internal server error!' })
+            res.status(500).json({ message: 'Internal server error!' })
         }
 
     }

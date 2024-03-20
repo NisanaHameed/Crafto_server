@@ -16,7 +16,7 @@ class ProfController{
                 console.log(profCheck.otp)
                 res.status(200).json({success:true});
             }else{
-                res.status(409).json({ success: false,message:"Email already exists" });
+                res.status(200).json({ success: false,message:"Email already exists" });
             }
         }catch(err){
             console.log(err);
@@ -27,14 +27,20 @@ class ProfController{
         try{
             let enteredOtp = req.body.otp;
             let otp = req.app.locals.otp;
+            console.log(typeof enteredOtp);
+            
             console.log(enteredOtp);
             if(enteredOtp===otp){
                 let profdata = req.app.locals.professional;
                 let saved = await this.usecase.saveProf(profdata);
                 if(saved.success){
+                    res.cookie('profToken',saved.token,{
+                        expires:new Date(Date.now()+25892000000),
+                        httpOnly:true
+                    })
                     res.status(200).json({success:true,token:saved.token});
                 }else{
-                    res.status(500).json({success:false});
+                    res.status(200).json({success:false});
                 }
             }else{
                 console.log("Wrong OTP");
@@ -47,8 +53,11 @@ class ProfController{
     }
     async fillProfile(req:Request,res:Response){
         try{
+            console.log('In fillProfile controller');
+            
             let data = req.body;
             let image = req.file?.filename
+            console.log(data);
             console.log(image);
             
             data.image = image;
@@ -57,7 +66,7 @@ class ProfController{
             if(saved){
                 res.status(200).json({success:true})
             }else{
-                res.status(500).json({ success: false, message: 'Internal server error!' });
+                res.status(200).json({ success: false, message: 'Internal server error!' });
             }
 
         }catch(err){
@@ -70,9 +79,13 @@ class ProfController{
             const {email,password} = req.body;
             let profCheck = await this.usecase.login(email,password);
             if(profCheck.success){
-                res.status(200).json({profCheck})
+                res.cookie('profToken',profCheck.token,{
+                    expires:new Date(Date.now()+25892000000),
+                    httpOnly:true
+                })
+                res.status(200).json({success:true,token:profCheck.token})
             }else{
-                res.status(401).json({profCheck})
+                res.status(402).json({message:profCheck.message})
             }
         }catch(err){
             console.log(err);
@@ -86,7 +99,7 @@ class ProfController{
                 let profdata = await this.usecase.getProfile(id);
                 res.status(200).json({success:true,profdata})
             }else{
-                res.status(401).json({success:false,message:"Incorrect ID"})
+                res.status(200).json({success:false,message:"Incorrect ID"})
             }
         }catch(err){
             console.log(err);

@@ -12,9 +12,13 @@ class AdminController {
             const { email, password } = req.body;
             let data = await this.usecase.login(email, password);
             if (data.success) {
+                res.cookie('adminToken',data.token,{
+                    expires:new Date(Date.now()+25892000000),
+                    httpOnly:true
+                })
                 res.status(200).json(data)
             } else {
-                res.status(401).json(data)
+                res.status(200).json(data)
             }
         } catch (err) {
             console.log(err);
@@ -24,6 +28,7 @@ class AdminController {
     async getUsers(req: Request, res: Response) {
         try {
             let users = await this.usecase.getUsers();
+            console.log(users)
             if (users) {
                 res.status(200).json({ success: true, users })
             } else {
@@ -42,7 +47,7 @@ class AdminController {
             if (blocked) {
                 res.status(200).json({ success: true });
             } else {
-                res.status(500).json({ success: false, message: "Internal server error" })
+                res.status(200).json({ success: false, message: "Internal server error" })
             }
         } catch (err) {
             console.log(err);
@@ -55,7 +60,7 @@ class AdminController {
             if (profs) {
                 res.status(200).json({ success: true, profs })
             } else {
-                res.status(500).json({ success: false, message: "Internal server error" })
+                res.status(200).json({ success: false, message: "Internal server error" })
             }
         }catch(err){
             console.log(err);
