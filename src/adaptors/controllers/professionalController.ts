@@ -16,7 +16,7 @@ class ProfController{
                 console.log(profCheck.otp)
                 res.status(200).json({success:true});
             }else{
-                res.status(200).json({ success: false,message:"Email already exists" });
+                res.status(409).json({ success: false,message:"Email already exists" });
             }
         }catch(err){
             console.log(err);
@@ -40,11 +40,11 @@ class ProfController{
                     })
                     res.status(200).json({success:true,token:saved.token});
                 }else{
-                    res.status(200).json({success:false});
+                    res.status(401).json({success:false});
                 }
             }else{
                 console.log("Wrong OTP");
-                res.status(401).json({success:false,message:"Incorrect otp"})
+                res.status(400).json({success:false,message:"Incorrect otp"})
             }
         }catch(err){
             console.log(err);
@@ -66,7 +66,7 @@ class ProfController{
             if(saved){
                 res.status(200).json({success:true})
             }else{
-                res.status(200).json({ success: false, message: 'Internal server error!' });
+                res.status(500).json({ success: false, message: 'Internal server error!' });
             }
 
         }catch(err){
@@ -74,6 +74,22 @@ class ProfController{
             res.status(500).json({ success: false, message: 'Internal server error!' });
         }
     }
+
+    async gsignup(req: Request, res: Response) {
+        try {
+            console.log('in gsignup')
+            const { firstname, email, password } = req.body;
+            const savedUser = await this.usecase.gSignup(firstname, email, password);
+            if (savedUser.success) {
+                res.status(200).json({ success: true, token: savedUser.token })
+            } else {
+                res.status(401).json({ message: savedUser.message })
+            }
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
     async login(req:Request,res:Response){
         try{
             const {email,password} = req.body;
@@ -85,7 +101,7 @@ class ProfController{
                 })
                 res.status(200).json({success:true,token:profCheck.token})
             }else{
-                res.status(402).json({message:profCheck.message})
+                res.status(401).json({message:profCheck.message})
             }
         }catch(err){
             console.log(err);
@@ -99,7 +115,7 @@ class ProfController{
                 let profdata = await this.usecase.getProfile(id);
                 res.status(200).json({success:true,profdata})
             }else{
-                res.status(200).json({success:false,message:"Incorrect ID"})
+                res.status(401).json({success:false,message:"Incorrect ID"})
             }
         }catch(err){
             console.log(err);

@@ -86,6 +86,28 @@ class ProfUsecase {
             throw err;
         }
     }
+
+    async gSignup(firstname: string, email: string, password: string) {
+        try {
+            const findUser = await this.profRepository.findByEmail(email);
+            if (findUser) {
+                return { success: false, message: "Email already exists" }
+            } else {
+                const hashedPassword = await this.hash.hashPassword(password);
+                const savedUser: any = await this.profRepository.saveProfessional({ firstname, email, password: hashedPassword } as Professional);
+                if (savedUser) {
+                    const token = JWT.generateToken(savedUser._id, 'professional');
+                    return { success: true, token }
+                } else {
+                    return { success: false, message: "Internal server error" }
+                }
+            }
+        } catch (err) {
+            console.log(err);
+            throw err;
+        }
+    }
+
     async getProfile(id: string) {
         try {
             const profdata = await this.profRepository.findProfById(id);

@@ -40,12 +40,12 @@ class Userusecase {
         try {
             let hashedP = await this.hash.hashPassword(user.password)
             user.password = hashedP;
-            let newUser:any = await this.userRepository.saveUser(user);
-            if(newUser){
+            let newUser: any = await this.userRepository.saveUser(user);
+            if (newUser) {
                 let token = JWT.generateToken(newUser._id, 'user');
-                return {success:true,token};
-            }else{
-                return {success:false}
+                return { success: true, token };
+            } else {
+                return { success: false }
             }
             return newUser;
         } catch (err) {
@@ -60,10 +60,10 @@ class Userusecase {
                 let checkPassword = await this.hash.compare(password, userdata.password);
                 if (!checkPassword) {
                     return { success: false, message: "Incorrect password" }
-                }else if (userdata.isBlocked) {
-                    return { success: false, message: "User is blocked" }
+                } else if (userdata.isBlocked) {
+                    return { success: false, message: "User is blocked by admin!" }
                 }
-                 else {
+                else {
                     let token = JWT.generateToken(userdata._id, 'user');
                     return { success: true, token: token };
                 }
@@ -77,6 +77,28 @@ class Userusecase {
             throw err;
         }
     }
+
+    async gSignup(name: string, email: string, password: string) {
+        try {
+            const findUser = await this.userRepository.findByEmail(email);
+            if (findUser) {
+                return { success: false, message: "Email already exists" }
+            } else {
+                const hashedPassword = await this.hash.hashPassword(password);
+                const savedUser: any = await this.userRepository.saveUser({ name, email, password: hashedPassword } as User);
+                if (savedUser) {
+                    const token = JWT.generateToken(savedUser._id, 'user');
+                    return { success: true, token }
+                } else {
+                    return { success: false, message: "Internal server error" }
+                }
+            }
+        } catch (err) {
+            console.log(err);
+            throw err;
+        }
+    }
+
     async getProfile(id: string) {
         try {
             const userdata = await this.userRepository.findUserById(id);

@@ -23,6 +23,7 @@ const router = express.Router();
 router.post('/signup',(req,res)=>controller.signup(req,res));
 router.post('/verifyotp',(req,res)=>controller.verifyOTP(req,res));
 router.post('/fillProfile',authenticate,uploadFile.single('image'),(req,res)=>controller.fillProfile(req,res));
+router.post('/gsignup',(req,res)=>controller.gsignup(req,res));
 router.post('/login',(req,res)=>controller.login(req,res));
 router.get('/profile',authenticate,(req,res)=>controller.getProfile(req,res));
 

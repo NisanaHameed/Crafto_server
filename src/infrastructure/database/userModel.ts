@@ -22,7 +22,6 @@ const userSchema: Schema<User> = new mongoose.Schema({
     },
     mobile: {
         type: Number,
-        required: true
     },
     password: {
         type: String,
