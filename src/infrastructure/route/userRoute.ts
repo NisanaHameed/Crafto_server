@@ -25,5 +25,6 @@ router.post('/login',(req,res)=>controller.login(req,res));
 router.post('/gsignup',(req,res)=>controller.gsignup(req,res));
 router.get('/profile',authenticate,(req,res)=>controller.getProfile(req,res));
 router.patch('/editProfile',authenticate,)
+router.get('/logout',(req,res)=>controller.logout(req,res));
 
 export default router;

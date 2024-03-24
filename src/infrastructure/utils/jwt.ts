@@ -16,7 +16,7 @@ class JWT{
       }
       static verifyToken(token:string):JwtPayload | null{
         try{
-          console.log(token)
+          // console.log(token)
           const decoded = jwt.verify(token,this.authSecret) as JwtPayload;
           console.log(decoded)
           return decoded;

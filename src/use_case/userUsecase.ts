@@ -4,6 +4,7 @@ import SendOTP from '../infrastructure/utils/sendMail';
 import GenerateOTP from '../infrastructure/utils/otpGenerator';
 import HashPassword from '../infrastructure/utils/hashPassword';
 import JWT from '../infrastructure/utils/jwt';
+import jwt from 'jsonwebtoken'
 
 class Userusecase {
 
@@ -18,17 +19,19 @@ class Userusecase {
         this.sendOtp = sendOtp;
         this.hash = hash;
     }
-    async findUser(email: string) {
+    async findUser(userData: User) {
         try {
-            let userExist = await this.userRepository.findByEmail(email)
+            let userExist = await this.userRepository.findByEmail(userData.email)
             if (userExist) {
                 return { data: true }
             } else {
                 const otp = this.GenerateOTP.generateOtp();
-                await this.sendOtp.sendMail(email, otp)
+                console.log(otp);
+                let token = jwt.sign({ userData, otp }, process.env.auth_secret as string, { expiresIn: '5m' });
+                await this.sendOtp.sendMail(userData.email, otp)
                 return {
                     data: false,
-                    otp: otp
+                    token: token
                 }
             }
         } catch (err) {
@@ -36,18 +39,27 @@ class Userusecase {
             throw err;
         }
     }
-    async saveUSer(user: User) {
+    async saveUSer(token: string, userOtp: string) {
         try {
-            let hashedP = await this.hash.hashPassword(user.password)
-            user.password = hashedP;
-            let newUser: any = await this.userRepository.saveUser(user);
-            if (newUser) {
-                let token = JWT.generateToken(newUser._id, 'user');
-                return { success: true, token };
+            let decoded = JWT.verifyToken(token)
+            if (decoded) {
+                if (userOtp == decoded.otp) {
+                    let hashedP = await this.hash.hashPassword(decoded.userData.password)
+                    decoded.userData.password = hashedP;
+                    let newUser: any = await this.userRepository.saveUser(decoded.userData);
+                    if (newUser) {
+                        let token = JWT.generateToken(newUser._id, 'user');
+                        return { success: true, token };
+                    } else {
+                        return { success: false, message: "Internal server error!" }
+                    }
+                } else {
+                    return { success: false, message: "Incorrect OTP!" }
+                }
             } else {
-                return { success: false }
+                return { success: false, message: "No token!Try again!" }
             }
-            return newUser;
+
         } catch (err) {
             console.log(err);
             throw err;

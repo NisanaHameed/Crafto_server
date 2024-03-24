@@ -8,6 +8,6 @@ export const connectDb = async() =>{
         
     }catch(err){
         console.log(err);
-        
+        console.log('Database is not connected!')
     }
 }

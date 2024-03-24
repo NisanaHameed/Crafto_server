@@ -1,5 +1,6 @@
 import { Request, Response } from "express"
 import Userusecase from "../../use_case/userUsecase";
+import User from "../../domain/user";
 
 class UserController {
     private Userusecase;
@@ -11,13 +12,13 @@ class UserController {
         try {
             const { name, email, mobile, password } = req.body;
             console.log(name, '+', email)
-            let userCheck: any = await this.Userusecase.findUser(email);
+            const userData = { name, email, mobile, password }
+            let userCheck: any = await this.Userusecase.findUser(userData as User);
             console.log(userCheck)
             if (!userCheck.data) {
-                req.app.locals.user = { name, email, mobile, password }
-                req.app.locals.otp = userCheck?.otp;
-                console.log(userCheck?.otp);
-                res.status(200).json({ success: true })
+                const token = userCheck?.token;
+                console.log(userCheck?.token);
+                res.status(200).json({ success: true, token })
             } else {
                 res.send(409).json({ success: false, message: "Email already exists" });
             }
@@ -31,27 +32,20 @@ class UserController {
         try {
             console.log('in verifyotp');
 
-            let enteredOtp = req.body.otp;
-            let otp = req.app.locals.otp;
-            console.log(enteredOtp)
-            console.log(otp);
-
-            if (enteredOtp === otp) {
-                let userdata = req.app.locals.user;
-                let saveduser: any = await this.Userusecase.saveUSer(userdata);
-                if (saveduser.success) {
-                    res.cookie('userToken', saveduser.token, {
-                        expires: new Date(Date.now() + 25892000000),
-                        httpOnly: true
-                    })
-                    res.status(200).json(saveduser)
-                } else {
-                    res.status(500).json({ success: false });
-                }
+            let token = req.headers.authorization?.split(' ')[1] as string
+            console.log('token' + token)
+            let userOtp = req.body.otp;
+            let saveduser = await this.Userusecase.saveUSer(token, userOtp)
+            if (saveduser.success) {
+                res.cookie('userToken', saveduser.token, {
+                    expires: new Date(Date.now() + 25892000000),
+                    httpOnly: true
+                })
+                res.status(200).json(saveduser)
             } else {
-                console.log('wrong otp');
-                res.status(401).json({ success: false });
+                res.status(402).json({ success: false, message: saveduser.message })
             }
+
         } catch (err) {
             console.log(err);
             res.status(500).json({ success: false, message: 'Internal server error!' })
@@ -70,7 +64,7 @@ class UserController {
                 })
                 res.status(200).json({ success: true, token: userCheck.token })
             } else {
-                res.status(401).json({ success:false, message: userCheck.message })
+                res.status(401).json({ success: false, message: userCheck.message })
             }
         } catch (err) {
             console.log(err);
@@ -116,6 +110,19 @@ class UserController {
         } catch (err) {
             console.log(err);
             res.status(500).json({ success: false, message: "Internal server error!" })
+        }
+    }
+
+    async logout(req: Request, res: Response) {
+        try {
+            res.cookie('userToken', '', {
+                httpOnly: true,
+                expires: new Date(0)
+            })
+            res.status(200).json({ success: true })
+        } catch (err) {
+            console.log(err);
+
         }
     }
 

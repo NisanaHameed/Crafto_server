@@ -12,13 +12,13 @@ class AdminController {
             const { email, password } = req.body;
             let data = await this.usecase.login(email, password);
             if (data.success) {
-                res.cookie('adminToken',data.token,{
-                    expires:new Date(Date.now()+25892000000),
-                    httpOnly:true
+                res.cookie('adminToken', data.token, {
+                    expires: new Date(Date.now() + 25892000000),
+                    httpOnly: true
                 })
                 res.status(200).json(data)
             } else {
-                res.status(200).json(data)
+                res.status(401).json(data)
             }
         } catch (err) {
             console.log(err);
@@ -42,7 +42,7 @@ class AdminController {
     async blockUser(req: Request, res: Response) {
         try {
             let userId = req.params.id;
-            console.log('userid'+userId)
+            console.log('userid' + userId)
             let blocked = await this.usecase.blockUser(userId);
             if (blocked) {
                 res.status(200).json({ success: true });
@@ -54,21 +54,21 @@ class AdminController {
             res.status(500).json({ success: false, message: "Internal server error" })
         }
     }
-    async getProfessionals(req:Request,res:Response){
-        try{
+    async getProfessionals(req: Request, res: Response) {
+        try {
             let profs = await this.usecase.getProfessionals();
             if (profs) {
                 res.status(200).json({ success: true, profs })
             } else {
                 res.status(200).json({ success: false, message: "Internal server error" })
             }
-        }catch(err){
+        } catch (err) {
             console.log(err);
             res.status(500).json({ success: false, message: "Internal server error" })
         }
     }
-    async blockProfessional(req:Request,res:Response){
-        try{
+    async blockProfessional(req: Request, res: Response) {
+        try {
             let profId = req.params.id;
             let blocked = await this.usecase.blockProfessional(profId);
             if (blocked) {
@@ -76,9 +76,22 @@ class AdminController {
             } else {
                 res.status(500).json({ success: false, message: "Internal server error" })
             }
-        }catch(err){
+        } catch (err) {
             console.log(err);
             res.status(500).json({ success: false, message: "Internal server error" })
+        }
+    }
+
+    async logout(req: Request, res: Response) {
+        try {
+            res.cookie('adminToken', '', {
+                httpOnly: true,
+                expires: new Date(0)
+            })
+            res.status(200).json({ success: true })
+        } catch (err) {
+            console.log(err);
+
         }
     }
 }

@@ -20,5 +20,6 @@ router.get('/users',authenticate,(req,res)=>controller.getUsers(req,res));
 router.post('/blockUser/:id',authenticate,(req,res)=>controller.blockUser(req,res));
 router.get('/professionals',authenticate,(req,res)=>controller.getProfessionals(req,res));
 router.post('/blockProfessional/:id',authenticate,(req,res)=>controller.blockProfessional(req,res));
+router.get('/logout',(req,res)=>controller.logout(req,res));
 
 export default router;
