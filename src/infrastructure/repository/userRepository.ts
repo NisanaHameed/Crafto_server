@@ -35,11 +35,8 @@ class UserRepository implements userInterface {
     async updateUser(id: string, userdata: User): Promise<boolean> {
         try {
             let updatedUser = await UserModel.updateOne({ _id: id }, userdata, { new: true });
-            if (updatedUser) {
-                return true
-            } else {
-                return false;
-            }
+            console.log(updatedUser)
+            return updatedUser.acknowledged
         } catch (err) {
             console.log(err);
             throw new Error("Failed to update user")

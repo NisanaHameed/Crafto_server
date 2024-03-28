@@ -35,6 +35,9 @@ const userSchema: Schema<User> = new mongoose.Schema({
         ref: 'Professional',
         default: []
     },
+    image:{
+        type:String
+    },
     isBlocked: {
         type: Boolean,
         default: false

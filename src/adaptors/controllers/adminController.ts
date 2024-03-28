@@ -82,6 +82,88 @@ class AdminController {
         }
     }
 
+    async addCategory(req: Request, res: Response) {
+        try {
+            let category = req.body.name;
+            let image = req.file;
+            let savedData = await this.usecase.addCategory(category, image);
+            if (savedData) {
+                res.status(200).json({ success: true });
+            } else {
+                res.status(500).json({ success: false, message: "Internal server error!" })
+            }
+
+        } catch (err) {
+            console.log(err);
+            res.status(500).json({ success: false, message: "Internal server error!" })
+        }
+    }
+
+    async addJobrole(req: Request, res: Response) {
+        try {
+            let name = req.body.name;
+            console.log(name)
+            let savedData = await this.usecase.addJobrole(name);
+            if (savedData) {
+                res.status(200).json({ success: true });
+            } else {
+                res.status(500).json({ success: false, message: "Internal server error!" })
+            }
+        } catch (err) {
+            console.log(err);
+            res.status(500).json({ success: false, message: "Internal server error!" })
+        }
+    }
+
+    async getCategory(req: Request, res: Response) {
+        try {
+            const categories = await this.usecase.getCategory();
+            res.status(200).json({ success: true, categories });
+        } catch (err) {
+            res.status(500).json({ success: false, message: 'Internal server error!' })
+        }
+    }
+
+    async getJobrole(req:Request,res:Response){
+        try{
+            const jobroles = await this.usecase.getJobrole();
+            res.status(200).json({success:true,jobroles});
+        }catch(err){
+            res.status(500).json({ success: false, message: 'Internal server error!' })
+        }
+    }
+
+    async deleteJobrole(req:Request,res:Response){
+        try{
+            let id = req.params.id;
+            console.log(id)
+            let deleted = await this.usecase.deleteJobrole(id);
+            if(deleted){
+                res.status(200).json({success:true});
+            }else{
+                res.status(500).json({success:false,message:'Something went wrong!'});
+            }
+        }catch(err){
+            console.log(err);
+            res.status(500).json({success:false,message:'Internal server error!'});
+        }
+    }
+
+    async editJobrole(req:Request,res:Response){
+        try{
+            let {id,name} = req.body;
+            let saved = await this.usecase.editJobrole(id,name);
+            if(saved){
+                res.status(200).json({success:true});
+            }else{
+                res.status(500).json({success:false,message:'Something went wrong!'})
+            }
+        }catch(err){
+            console.log(err);
+            res.status(500).json({success:false,message:err});
+        }
+    }
+
     async logout(req: Request, res: Response) {
         try {
             res.cookie('adminToken', '', {

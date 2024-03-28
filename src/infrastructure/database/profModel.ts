@@ -1,4 +1,4 @@
-import mongoose,{Document,Schema} from 'mongoose'
+import mongoose,{Schema} from 'mongoose'
 import Professional from '../../domain/professional'
 
 const ProfSchema:Schema<Professional> = new mongoose.Schema({

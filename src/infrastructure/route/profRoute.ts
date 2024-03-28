@@ -28,6 +28,10 @@ router.post('/fillProfile',uploadFile.single('image'),(req,res)=>controller.fill
 router.post('/gsignup',(req,res)=>controller.gsignup(req,res));
 router.post('/login',(req,res)=>controller.login(req,res));
 router.get('/profile',authenticate,(req,res)=>controller.getProfile(req,res));
+router.patch('/editProfile',authenticate,(req,res)=>controller.editProfile(req,res));
+router.patch('/editImage',authenticate,uploadFile.single('image'),(req,res)=>controller.editImage(req,res));
+router.patch('/editEmail',authenticate,(req,res)=>controller.editEmail(req,res));
+router.patch('/editPassword',authenticate,(req,res)=>controller.editPassword(req,res));
 router.get('/logout',(req,res)=>controller.logout(req,res));
 
 export default router;

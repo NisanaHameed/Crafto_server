@@ -5,6 +5,7 @@ import GenerateOTP from '../infrastructure/utils/otpGenerator';
 import HashPassword from '../infrastructure/utils/hashPassword';
 import JWT from '../infrastructure/utils/jwt';
 import jwt from 'jsonwebtoken'
+import Cloudinary from '../infrastructure/utils/cloudinary';
 
 class Userusecase {
 
@@ -12,12 +13,14 @@ class Userusecase {
     private GenerateOTP: GenerateOTP;
     private sendOtp: SendOTP;
     private hash: HashPassword;
+    private cloudinary:Cloudinary
 
-    constructor(userRpository: IUserInterface, GenerateOTP: GenerateOTP, sendOtp: SendOTP, hash: HashPassword, jwt: JWT) {
+    constructor(userRpository: IUserInterface, GenerateOTP: GenerateOTP, sendOtp: SendOTP, hash: HashPassword, jwt: JWT,Cloudinary:Cloudinary) {
         this.userRepository = userRpository;
         this.GenerateOTP = GenerateOTP;
         this.sendOtp = sendOtp;
         this.hash = hash;
+        this.cloudinary = Cloudinary;
     }
     async findUser(userData: User) {
         try {
@@ -124,14 +127,11 @@ class Userusecase {
         try {
             let checkEmail = await this.userRepository.findUserById(id);
             if (checkEmail?.email !== editedData.email) {
-                let userExist = await this.userRepository.findByEmail(editedData.email);
-                if (userExist) {
-                    return { success: false, message: "Email already exists" }
-                } else {
-                    const otp = this.GenerateOTP.generateOtp();
-                    let sendMail = await this.sendOtp.sendMail(editedData.email, otp);
-                }
             }
+            let uploadFile = await this.cloudinary.uploadToCloud(editedData.image);
+            editedData.image = uploadFile;
+            let res = await this.userRepository.updateUser(id,editedData);
+            return res;
         } catch (err) {
             console.log(err);
             throw err;

@@ -1,12 +1,13 @@
-import multer from 'multer';
+import multer,{Multer} from 'multer';
 import path from 'path'
+import { Request } from 'express';
 
 const storage = multer.diskStorage({
-    destination:function(req,file,cb){
+    destination:function(req:Request,file:Express.Multer.File,cb){
         cb(null,path.join(__dirname,'../public/images'));
         
     },
-    filename:function(req,file,cb){
+    filename:function(req:Request,file:Express.Multer.File,cb){
         const name = Date.now()+'-'+file.originalname;
         console.log('image uploaded')
         cb(null,name);

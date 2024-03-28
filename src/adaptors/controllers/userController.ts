@@ -13,7 +13,7 @@ class UserController {
             const { name, email, mobile, password } = req.body;
             console.log(name, '+', email)
             const userData = { name, email, mobile, password }
-            let userCheck: any = await this.Userusecase.findUser(userData as User);
+            let userCheck = await this.Userusecase.findUser(userData as User);
             console.log(userCheck)
             if (!userCheck.data) {
                 const token = userCheck?.token;
@@ -55,7 +55,7 @@ class UserController {
     async login(req: Request, res: Response) {
         try {
             const { email, password } = req.body;
-            let userCheck: any = await this.Userusecase.login(email, password);
+            let userCheck = await this.Userusecase.login(email, password);
             console.log(userCheck)
             if (userCheck.success) {
                 res.cookie('userToken', userCheck.token, {
@@ -105,8 +105,19 @@ class UserController {
     async editProfile(req: Request, res: Response) {
         try {
             const userId = req.userId;
-            const { editedData } = req.body
-
+            const editedData = req.body
+            let image = req.file;
+            editedData.image = image;
+            if(userId){
+                let updated = await this.Userusecase.updateProfile(userId,editedData);
+                if(updated){
+                    res.status(200).json({success:true});
+                }else{
+                    res.status(500).json({success:false,message:'Not updated!'})
+                }
+            }else{
+                res.status(401).json({success:false,message:"Something went wrong!Try again!"})
+            } 
         } catch (err) {
             console.log(err);
             res.status(500).json({ success: false, message: "Internal server error!" })

@@ -55,17 +55,6 @@ class ProfUsecase {
             } else {
                 return { success: false, message: "No token.Try again!" }
             }
-
-            // let hashedP = await this.hash.hashPassword(prof.password);
-            // prof.password = hashedP;
-            // let newProf: any = await this.profRepository.saveProfessional(prof);
-            // console.log('savedP' + newProf);
-            // if (newProf) {
-            //     let token = JWT.generateToken(newProf._id, 'professional');
-            //     return { success: true, token }
-            // } else {
-            //     return { success: false }
-            // }
         } catch (err) {
             console.log(err);
             throw err;
@@ -80,7 +69,7 @@ class ProfUsecase {
                 profdata.password = hashedP;
 
                 let uploadFile = await this.cloudinary.uploadToCloud(profdata.image);
-                console.log('uploaded file'+uploadFile)
+                console.log('uploaded file' + uploadFile)
                 profdata.image = uploadFile
                 let newProf: any = await this.profRepository.saveProfessional(profdata);
                 if (newProf) {
@@ -128,15 +117,9 @@ class ProfUsecase {
             if (findUser) {
                 return { success: false, message: "Email already exists" }
             } else {
-                // const hashedPassword = await this.hash.hashPassword(password);
-                // const savedUser: any = await this.profRepository.saveProfessional({ email, password: hashedPassword } as Professional);
-                // if (savedUser) {
                 const profData = { email, password }
                 const token = jwt.sign({ profData }, process.env.auth_secret as string, { expiresIn: '15m' });
                 return { success: true, token }
-                // } else {
-                //     return { success: false, message: "Internal server error" }
-                // }
             }
         } catch (err) {
             console.log(err);
@@ -150,6 +133,52 @@ class ProfUsecase {
             return profdata;
         } catch (err) {
             console.log(err);
+            throw err;
+        }
+    }
+    async editProfile(id: string, data: Professional) {
+        try {
+            let res = await this.profRepository.updateProfile(id, data);
+            return res;
+        } catch (err) {
+            throw err;
+        }
+    }
+
+    async editImage(id: string, image: Express.Multer.File) {
+        try {
+            let uploadFile = await this.cloudinary.uploadToCloud(image);
+            const res = await this.profRepository.updateImage(id, uploadFile);
+            return res;
+        } catch (err) {
+            throw err;
+        }
+    }
+
+    async editEmail(id: string, email: string) {
+        try {
+            const res = await this.profRepository.updateEmail(id, email);
+            return res;
+        } catch (err) {
+            throw err;
+        }
+    }
+
+    async editPassword(id: string, cpassword: string, npassword: string) {
+        try {
+            let profdata = await this.profRepository.findProfById(id);
+            if (profdata && profdata.password == cpassword) {
+                let res = await this.profRepository.updatePassword(id, npassword);
+                if (res) {
+                    return { success: true };
+                } else {
+                    return { success: false, message: 'Password is not edited.Try again!' }
+                }
+
+            } else {
+                return { success: false, message: 'Current password is incorrect!' }
+            }
+        } catch (err) {
             throw err;
         }
     }

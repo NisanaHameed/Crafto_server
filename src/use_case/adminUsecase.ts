@@ -2,17 +2,20 @@ import Admin from "../domain/admin";
 import IAdminInterface from "./interface/IAdminInterface";
 import JWT from "../infrastructure/utils/jwt";
 import HashPassword from "../infrastructure/utils/hashPassword";
+import Cloudinary from "../infrastructure/utils/cloudinary";
 
 class AdminUsecase {
 
     private repository: IAdminInterface;
     private jwt: JWT;
     private hash: HashPassword;
+    private cloudinary:Cloudinary
 
-    constructor(repository: IAdminInterface, jwt: JWT, hash: HashPassword) {
+    constructor(repository: IAdminInterface, jwt: JWT, hash: HashPassword,cloudinary:Cloudinary) {
         this.repository = repository;
         this.jwt = jwt;
         this.hash = hash;
+        this.cloudinary = cloudinary;
     }
 
     async login(email: string, password: string) {
@@ -67,6 +70,60 @@ class AdminUsecase {
             return blocked;
         } catch (err) {
             console.log(err);
+            throw err;
+        }
+    }
+
+    async addCategory(name:string,image:any){
+        try{
+            let upload = await this.cloudinary.uploadToCloud(image);
+            let saveData = await this.repository.saveCategory(name,upload);
+            return saveData;
+        }catch(err){
+            throw err
+        }
+    }
+    async addJobrole(name:string){
+        try{
+            let saveData = await this.repository.saveJobrole(name);
+            return saveData;
+        }catch(err){
+            throw err;
+        }
+    }
+
+    async getCategory(){
+        try{
+            let categories = await this.repository.getCategory();
+            return categories;
+        }catch(err){
+            throw err;
+        }
+    }
+
+    async getJobrole(){
+        try{
+            let jobrole = await this.repository.getJobrole();
+            return jobrole
+        }catch(err){
+            throw err;
+        }
+    }
+
+    async deleteJobrole(id:string){
+        try{
+            let res = await this.repository.deleteJobrole(id);
+            return res;
+        }catch(err){
+            throw err;
+        }
+    }
+
+    async editJobrole(id:string,name:string){
+        try{
+            let res = await this.repository.editJobrole(id,name);
+            return res;
+        }catch(err){
             throw err;
         }
     }
