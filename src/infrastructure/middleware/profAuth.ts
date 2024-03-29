@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import ProfRepository from '../repository/profRepository';
 const repository = new ProfRepository();
 dotenv.config()
+const jwt = new JWT();
 
 declare global {
     namespace Express {
@@ -16,16 +17,14 @@ declare global {
 const profAuth = async (req: Request, res: Response, next: NextFunction) => {
     console.log('In ProfAuth')
 
-    // const token = req.headers.authorization?.split(' ')[1];
     let token = req.cookies.profToken;
-    console.log(token);
     
     if (!token) {
         return res.status(401).json({ success: false, message: "Unauthorized - No token provided" })
     }
 
     try {
-        const decoded = JWT.verifyToken(token)
+        const decoded = jwt.verifyToken(token)
         console.log(decoded)
         if (decoded && decoded.role !== 'professional') {
             return res.status(200).json({ success: false, message: "Unauthorized - Invalid token" })

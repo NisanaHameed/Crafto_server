@@ -45,7 +45,7 @@ class ProfUsecase {
     }
     async saveProf(token: string, profOtp: string) {
         try {
-            let decoded = JWT.verifyToken(token)
+            let decoded = this.jwt.verifyToken(token)
             if (decoded) {
                 if (profOtp == decoded.otp) {
                     return { success: true };
@@ -62,7 +62,7 @@ class ProfUsecase {
     }
     async fillProfile(profdata: Professional, token: string) {
         try {
-            let decoded = JWT.verifyToken(token);
+            let decoded = this.jwt.verifyToken(token);
             if (decoded) {
                 let hashedP = await this.hash.hashPassword(decoded.profData.password);
                 profdata.email = decoded.profData.email;
@@ -73,7 +73,7 @@ class ProfUsecase {
                 profdata.image = uploadFile
                 let newProf: any = await this.profRepository.saveProfessional(profdata);
                 if (newProf) {
-                    let token = JWT.generateToken(newProf._id, 'professional');
+                    let token = this.jwt.generateToken(newProf._id, 'professional');
                     return { success: true, token }
                 } else {
                     return { success: false, message: "Internal server error!" }
@@ -99,7 +99,7 @@ class ProfUsecase {
                 } else if (profdata.isBlocked) {
                     return { success: false, message: "User is blocked" }
                 } else {
-                    let token = JWT.generateToken(profdata._id, 'professional');
+                    let token = this.jwt.generateToken(profdata._id, 'professional');
                     return { success: true, token: token };
                 }
             } else {
@@ -155,10 +155,43 @@ class ProfUsecase {
         }
     }
 
-    async editEmail(id: string, email: string) {
+    async editEmail(email: string) {
         try {
-            const res = await this.profRepository.updateEmail(id, email);
-            return res;
+            let profExist = await this.profRepository.findByEmail(email);
+            if (profExist) {
+                return { data: true };
+            } else {
+                const otp = this.generateOtp.generateOtp();
+                console.log(otp);
+                let token = jwt.sign({ email, otp }, process.env.auth_secret as string, { expiresIn: '5m' });
+                await this.sendMail.sendMail(email, otp);
+                return {
+                    data: false,
+                    token: token
+                }
+            }
+        } catch (err) {
+            throw err;
+        }
+    }
+
+    async changeEmail_Otp(id: string, token: string, enteredeOtp: string) {
+        try {
+            let decoded = await this.jwt.verifyToken(token);
+            if (decoded) {
+                if (decoded.otp === enteredeOtp) {
+                    const res = await this.profRepository.updateEmail(id, decoded.email);
+                    if (res) {
+                        return { success: true };
+                    } else {
+                        return { success: false, message: 'Email is not updated.Try again!' }
+                    }
+                } else {
+                    return { success: false, message: 'Incorrect OTP!' }
+                }
+            } else {
+                return { success: false, message: 'Token expired!' }
+            }
         } catch (err) {
             throw err;
         }

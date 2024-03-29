@@ -1,4 +1,5 @@
 interface Jobrole{
+    _id?:string
     name:string
 }
 

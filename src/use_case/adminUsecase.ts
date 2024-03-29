@@ -24,7 +24,7 @@ class AdminUsecase {
             if (findAdmin) {
                 let passwordCheck = await this.hash.compare(password, findAdmin.password);
                 if (passwordCheck) {
-                    let token = JWT.generateToken(findAdmin._id, 'admin')
+                    let token = this.jwt.generateToken(findAdmin._id, 'admin')
                     return { success: true, adminData: findAdmin, token }
                 } else {
                     return { success: false, message: "Incorrect password" }

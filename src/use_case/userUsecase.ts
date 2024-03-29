@@ -14,6 +14,7 @@ class Userusecase {
     private sendOtp: SendOTP;
     private hash: HashPassword;
     private cloudinary:Cloudinary
+    private jwt:JWT;
 
     constructor(userRpository: IUserInterface, GenerateOTP: GenerateOTP, sendOtp: SendOTP, hash: HashPassword, jwt: JWT,Cloudinary:Cloudinary) {
         this.userRepository = userRpository;
@@ -21,6 +22,7 @@ class Userusecase {
         this.sendOtp = sendOtp;
         this.hash = hash;
         this.cloudinary = Cloudinary;
+        this.jwt = jwt;
     }
     async findUser(userData: User) {
         try {
@@ -44,14 +46,14 @@ class Userusecase {
     }
     async saveUSer(token: string, userOtp: string) {
         try {
-            let decoded = JWT.verifyToken(token)
+            let decoded = this.jwt.verifyToken(token)
             if (decoded) {
                 if (userOtp == decoded.otp) {
                     let hashedP = await this.hash.hashPassword(decoded.userData.password)
                     decoded.userData.password = hashedP;
                     let newUser: any = await this.userRepository.saveUser(decoded.userData);
                     if (newUser) {
-                        let token = JWT.generateToken(newUser._id, 'user');
+                        let token = this.jwt.generateToken(newUser._id, 'user');
                         return { success: true, token };
                     } else {
                         return { success: false, message: "Internal server error!" }
@@ -79,7 +81,7 @@ class Userusecase {
                     return { success: false, message: "User is blocked by admin!" }
                 }
                 else {
-                    let token = JWT.generateToken(userdata._id, 'user');
+                    let token = this.jwt.generateToken(userdata._id, 'user');
                     return { success: true, token: token };
                 }
 
@@ -102,7 +104,7 @@ class Userusecase {
                 const hashedPassword = await this.hash.hashPassword(password);
                 const savedUser: any = await this.userRepository.saveUser({ name, email, password: hashedPassword } as User);
                 if (savedUser) {
-                    const token = JWT.generateToken(savedUser._id, 'user');
+                    const token = this.jwt.generateToken(savedUser._id, 'user');
                     return { success: true, token }
                 } else {
                     return { success: false, message: "Internal server error" }

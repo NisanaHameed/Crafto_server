@@ -153,19 +153,37 @@ class ProfController {
     }
     async editEmail(req: Request, res: Response) {
         try {
-            let id = req.profId;
             let email = req.body.email
-            if (id && email) {
-                let edited = await this.usecase.editEmail(id, email);
-                if (edited) {
-                    res.status(200).json({ success: true });
-                } else {
-                    res.status(500).json({ success: false, message: 'Email is not updated' })
-                }
+            let edited = await this.usecase.editEmail(email);
+            if (!edited.data) {
+                res.status(200).json({ success: true, token: edited.token });
             } else {
-                res.status(401).json({ success: false, message: 'No token!Please login' })
+                res.status(401).json({ success: false, message: 'Email already exists!' })
             }
 
+        } catch (err) {
+            res.status(500).json({ success: false, message: "Internal server error" })
+        }
+    }
+
+    async changeEmail_Otp(req: Request, res: Response) {
+        try {
+            let id = req.profId;
+            let enteredeOtp = req.body.otp;
+            console.log(id,enteredeOtp)
+            let token = req.headers.authorization?.split(' ')[1] as string;
+            if (id) {
+                let result = await this.usecase.changeEmail_Otp(id, token, enteredeOtp);
+                if (result.success) {
+                    res.status(200).json({ success: true });
+                } else {
+                    console.log('error happened')
+                    console.log(result.message);
+                    res.status(401).json({ success: false, message: result.message })
+                }
+            } else {
+                res.status(401).json({ success: false, message: 'No token!' })
+            }
         } catch (err) {
             res.status(500).json({ success: false, message: "Internal server error" })
         }
@@ -177,7 +195,7 @@ class ProfController {
             let cpassword = req.body.currentPassword;
             let npassword = req.body.newPassword;
             if (id) {
-                let edited = await this.usecase.editPassword(id, cpassword,npassword);
+                let edited = await this.usecase.editPassword(id, cpassword, npassword);
                 if (edited.success) {
                     res.status(200).json({ success: true });
                 } else {

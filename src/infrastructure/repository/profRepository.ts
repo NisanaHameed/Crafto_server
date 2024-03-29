@@ -33,7 +33,7 @@ class ProfRepository implements profInterface {
     }
     async updateProfile(id: string, editeddata: Professional): Promise<boolean> {
         try {
-            let data = await ProfModel.updateOne({ _id: id }, editeddata, { new: true });
+            let data = await ProfModel.updateOne({ _id: id }, editeddata);
             return data.acknowledged;
         } catch (err) {
             console.log(err);
@@ -42,7 +42,7 @@ class ProfRepository implements profInterface {
     }
     async updateImage(id: string, image: string): Promise<Boolean> {
         try {
-            let data = await ProfModel.updateOne({ _id: id }, { $set: { image: image } }, { new: true })
+            let data = await ProfModel.updateOne({ _id: id }, { $set: { image: image } })
             return data.acknowledged;
         } catch (err) {
             console.log(err);
@@ -52,7 +52,7 @@ class ProfRepository implements profInterface {
 
     async updateEmail(id: string, email: string): Promise<Boolean> {
         try {
-            let data = await ProfModel.updateOne({ _id: id }, { $set: { email: email } }, { new: true })
+            let data = await ProfModel.updateOne({ _id: id }, { $set: { email: email } })
             return data.acknowledged;
         } catch (err) {
             console.log(err);

@@ -1,9 +1,9 @@
 import {Request,Response,NextFunction} from 'express'
-import jwt, { JwtPayload } from 'jsonwebtoken'
 import JWT from '../utils/jwt';
 import dotenv from 'dotenv';
 import UserRepository from '../repository/userRepository';
 const repository = new UserRepository();
+const jwt = new JWT();
 dotenv.config()
 
 declare global {
@@ -15,15 +15,14 @@ declare global {
 }
 
 const userAuth = async (req:Request,res:Response,next:NextFunction)=>{
-    
-    // const token = req.headers.authorization?.split(' ')[1];
+  
     let token = req.cookies.userToken;
     if(!token){
         return res.status(401).json({success:false,message:"Unauthorized - No token provided"})
     }
 
     try{
-        const decoded = JWT.verifyToken(token) 
+        const decoded = jwt.verifyToken(token) 
         if(decoded && decoded.role!=='user'){
             return res.status(401).send({success:false,message:"Unauthorized - Invalid token"})
         }

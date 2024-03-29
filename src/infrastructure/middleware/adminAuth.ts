@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express'
 import JWT from '../utils/jwt';
 import dotenv from 'dotenv';
 dotenv.config()
+const jwt = new JWT();
 
 declare global {
     namespace Express {
@@ -14,7 +15,6 @@ declare global {
 const adminAuth = async (req: Request, res: Response, next: NextFunction) => {
     console.log('In adminAuth')
 
-    // const token = req.headers.authorization?.split(' ')[1];
     let token = req.cookies.adminToken
     
     if (!token) {
@@ -22,7 +22,7 @@ const adminAuth = async (req: Request, res: Response, next: NextFunction) => {
     }
 
     try {
-        const decoded = JWT.verifyToken(token)
+        const decoded = jwt.verifyToken(token)
         if (decoded && decoded.role !== 'admin') {
             return res.status(401).send({ success: false, message: "Unauthorized - Invalid token" })
         }
