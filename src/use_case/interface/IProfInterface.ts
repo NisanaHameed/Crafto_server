@@ -8,6 +8,7 @@ interface IProfInterface {
     updateImage(id:string,image:string):Promise<Boolean>
     updateEmail(id:string,email:string):Promise<Boolean>
     updatePassword(id:string,password:string):Promise<Boolean>
+    findProfessionals(id:string):Promise<Professional | null>
 }
 
 export default IProfInterface;

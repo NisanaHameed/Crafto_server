@@ -22,11 +22,36 @@ class PostUsecase {
         }
     }
 
-    async getPost(profId:string){
-        try{
+    async getPost(profId: string) {
+        try {
             let res = await this.repository.getPost(profId);
             return res;
-        }catch(err){
+        } catch (err) {
+            throw err;
+        }
+    }
+
+    async getDesigns(category: string) {
+        try {
+            let res = await this.repository.getDesigns(category);
+            return res;
+        } catch (err) {
+            throw err;
+        }
+    }
+    async getAllPosts() {
+        try {
+            let res = await this.repository.getAllPosts();
+            return res;
+        } catch (err) {
+            throw err;
+        }
+    }
+    async getPortraits(id: string) {
+        try {
+            let res = await this.repository.getPortraits(id);
+            return res;
+        } catch (err) {
             throw err;
         }
     }

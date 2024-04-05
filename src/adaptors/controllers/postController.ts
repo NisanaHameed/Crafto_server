@@ -41,5 +41,62 @@ class PostController {
             res.status(500).json({ success: false, message: 'Internal server error!' })
         }
     }
+
+    async getDesigns(req: Request, res: Response) {
+        try {
+            let category = req.params.category;
+            let posts = await this.usecase.getDesigns(category);
+            if (posts) {
+                console.log(posts)
+                res.status(200).json({ success: true, posts });
+            } else {
+                res.status(500).json({ success: false, message: 'Failed to fetch data' });
+            }
+        } catch (err) {
+            console.log(err);
+            res.status(500).json({ success: false, message: 'Internal server error!' })
+        }
+    }
+
+    async getAllPosts(req: Request, res: Response) {
+        try {
+            let posts = await this.usecase.getAllPosts();
+            res.status(200).json({ success: true, posts });
+        } catch (err) {
+            res.status(500).json({ success: false, message: err });
+        }
+    }
+
+    async getPortraits(req: Request, res: Response) {
+        try {
+            let id = req.profId;
+            if (id) {
+                let portraits = await this.usecase.getPortraits(id);
+                res.status(200).json({ success: true, portraits });
+            } else {
+                res.status(500).json({ success: false, message: 'Failed to fetch data!' });
+            }
+
+        } catch (err) {
+            res.status(500).json({ success: false, message: err });
+        }
+    }
+
+    async getPostsById(req: Request, res: Response) {
+        try {
+            let profId = req.params.id;
+            if (profId) {
+                let posts = await this.usecase.getPost(profId);
+                console.log(posts);
+                res.status(200).json({ success: true, posts: posts });
+            } else {
+                res.status(401).json({ success: false, message: 'No token!' })
+            }
+
+        } catch (err) {
+            res.status(500).json({ success: false, message: 'Internal server error!' })
+        }
+
+    }
 }
 export default PostController;

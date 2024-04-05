@@ -215,6 +215,15 @@ class ProfUsecase {
             throw err;
         }
     }
+
+    async findProfessionals(id: string) {
+        try {
+            let res = await this.profRepository.findProfessionals(id);
+            return res;
+        } catch (err) {
+            throw err;
+        }
+    }
 }
 
 export default ProfUsecase;

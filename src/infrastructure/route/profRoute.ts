@@ -18,31 +18,37 @@ const sendMail = new SendMail();
 const otp = new GenerateOTP();
 const repository = new ProfRepository();
 const cloudinary = new Cloudinary();
-import {uploadFile} from "../middleware/multer";
+import { uploadFile } from "../middleware/multer";
 
-const useCase = new ProfUsecase(repository,otp,sendMail,hash,jwt,cloudinary);
+const useCase = new ProfUsecase(repository, otp, sendMail, hash, jwt, cloudinary);
 const controller = new ProfController(useCase);
 
 const postRepository = new PostRepository();
-const postUsecase = new PostUsecase(cloudinary,postRepository);
+const postUsecase = new PostUsecase(cloudinary, postRepository);
 const postController = new PostController(postUsecase);
 
 const router = express.Router();
 
-router.post('/signup',(req,res)=>controller.signup(req,res));
-router.post('/verifyotp',(req,res)=>controller.verifyOTP(req,res));
-router.post('/fillProfile',uploadFile.single('image'),(req,res)=>controller.fillProfile(req,res));
-router.post('/gsignup',(req,res)=>controller.gsignup(req,res));
-router.post('/login',(req,res)=>controller.login(req,res));
-router.get('/profile',authenticate,(req,res)=>controller.getProfile(req,res));
-router.patch('/editProfile',authenticate,(req,res)=>controller.editProfile(req,res));
-router.patch('/editImage',authenticate,uploadFile.single('image'),(req,res)=>controller.editImage(req,res));
-router.post('/editEmail',authenticate,(req,res)=>controller.editEmail(req,res));
-router.put('/verifyEmailOtp',authenticate,(req,res)=>controller.changeEmail_Otp(req,res));
-router.patch('/editPassword',authenticate,(req,res)=>controller.editPassword(req,res));
-router.get('/logout',(req,res)=>controller.logout(req,res));
+router.post('/signup', (req, res) => controller.signup(req, res));
+router.post('/verifyotp', (req, res) => controller.verifyOTP(req, res));
+router.post('/fillProfile', uploadFile.single('image'), (req, res) => controller.fillProfile(req, res));
+router.post('/gsignup', (req, res) => controller.gsignup(req, res));
+router.post('/login', (req, res) => controller.login(req, res));
+router.get('/profile', authenticate, (req, res) => controller.getProfile(req, res));
+router.patch('/editProfile', authenticate, (req, res) => controller.editProfile(req, res));
+router.patch('/editImage', authenticate, uploadFile.single('image'), (req, res) => controller.editImage(req, res));
+router.post('/editEmail', authenticate, (req, res) => controller.editEmail(req, res));
+router.put('/verifyEmailOtp', authenticate, (req, res) => controller.changeEmail_Otp(req, res));
+router.patch('/editPassword', authenticate, (req, res) => controller.editPassword(req, res));
+router.get('/professionals', authenticate, (req, res) => controller.getProfessionals(req, res));
+router.get('/profDetails/:id', (req, res) => controller.getAProfessional(req, res));
+router.get('/logout', (req, res) => controller.logout(req, res));
 
-router.post('/createPost',authenticate,uploadFile.single('image'),(req,res)=>postController.createPost(req,res));
-router.get('/getPosts',authenticate,(req,res)=>postController.getPost(req,res));
+router.post('/createPost', authenticate, uploadFile.single('image'), (req, res) => postController.createPost(req, res));
+router.get('/getPosts', authenticate, (req, res) => postController.getPost(req, res));
+router.get('/designs/:category', (req, res) => postController.getDesigns(req, res));
+router.get('/allDesigns', (req, res) => postController.getAllPosts(req, res));
+router.get('/portraits', authenticate, (req, res) => postController.getPortraits(req, res));
+router.get('/postsById/:id', (req, res) => postController.getPostsById(req, res));
 
 export default router;

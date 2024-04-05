@@ -69,6 +69,15 @@ class ProfRepository implements profInterface {
             throw new Error("Failed to update password")
         }
     }
+
+    async findProfessionals(id: string): Promise<Professional | null> {
+        try {
+            let profs: any = await ProfModel.find({ _id: { $ne: id } });
+            return profs;
+        } catch (err) {
+            throw new Error('Failed to fetch professionals!');
+        }
+    }
 }
 
 export default ProfRepository;

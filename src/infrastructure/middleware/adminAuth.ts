@@ -14,7 +14,6 @@ declare global {
 
 const adminAuth = async (req: Request, res: Response, next: NextFunction) => {
     console.log('In adminAuth')
-
     let token = req.cookies.adminToken
     
     if (!token) {

@@ -30,7 +30,7 @@ const userAuth = async (req:Request,res:Response,next:NextFunction)=>{
         if(decoded && decoded.Id){
             let user = await repository.findUserById(decoded.Id);
             if(user?.isBlocked){
-                return res.status(401).send({success:false,message:"User is blocked"})
+                return res.status(401).send({success:false,message:"User is blocked by admin!"})
             }else{
                 req.userId = decoded.Id;
             next();

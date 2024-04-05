@@ -9,7 +9,7 @@ const postSchema: Schema<Post> = new mongoose.Schema({
     },
     category: {
         type: String,
-        required: true
+        required: true,
     },
     caption: {
         type: String,

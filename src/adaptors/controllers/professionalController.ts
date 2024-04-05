@@ -101,7 +101,6 @@ class ProfController {
             console.log('id' + id)
             if (id) {
                 let profdata = await this.usecase.getProfile(id);
-                console.log('profdata' + profdata)
                 res.status(200).json({ success: true, profdata })
             } else {
                 res.status(401).json({ success: false, message: "Incorrect ID" })
@@ -170,7 +169,7 @@ class ProfController {
         try {
             let id = req.profId;
             let enteredeOtp = req.body.otp;
-            console.log(id,enteredeOtp)
+            console.log(id, enteredeOtp)
             let token = req.headers.authorization?.split(' ')[1] as string;
             if (id) {
                 let result = await this.usecase.changeEmail_Otp(id, token, enteredeOtp);
@@ -220,6 +219,36 @@ class ProfController {
         } catch (err) {
             console.log(err);
 
+        }
+    }
+
+    async getProfessionals(req: Request, res: Response) {
+        try {
+            let id = req.profId;
+            if (id) {
+                let profs = await this.usecase.findProfessionals(id);
+                res.status(200).json({ success: true, profs });
+            } else {
+                res.status(500).json({ success: false, message: 'Failed to fetch data!' });
+            }
+
+        } catch (err) {
+            res.status(500).json({ success: false, message: err });
+        }
+    }
+
+    async getAProfessional(req: Request, res: Response) {
+        let id = req.params.id;
+        try {
+            if (id) {
+                let profdata = await this.usecase.getProfile(id);
+                res.status(200).json({ success: true, profdata })
+            } else {
+                res.status(401).json({ success: false, message: "Incorrect ID" })
+            }
+        } catch (err) {
+            console.log(err);
+            res.status(500).json({ success: false, message: "Internal server error" })
         }
     }
 }

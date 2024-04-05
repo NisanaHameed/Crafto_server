@@ -7,7 +7,7 @@ class PostRepository implements IPostRepository {
         try {
             let newPost = new postModel(post);
             await newPost.save();
-            return (newPost ? true : false)
+            return (newPost ? true : false);
         } catch (err) {
             console.log(err);
             throw new Error('Failed to save post!');
@@ -15,12 +15,42 @@ class PostRepository implements IPostRepository {
     }
 
     async getPost(profId: string): Promise<Post | null> {
-        try{
-            let postData:any = await postModel.find({profId:profId});
-            return postData
-        }catch(err){
+        try {
+            let postData: any = await postModel.find({ profId: profId });
+            return postData;
+        } catch (err) {
             console.log(err);
-            throw new Error()
+            throw new Error();
+        }
+    }
+
+    async getDesigns(category: string): Promise<Post | null> {
+        try {
+            console.log(category);
+            let designs: any = await postModel.find({ category: category }).populate('profId');
+            return designs;
+        } catch (err) {
+            console.log(err);
+            throw new Error('Failed to fetch designs!');
+        }
+    }
+
+    async getAllPosts(): Promise<Post | null> {
+        try {
+            let posts: any = await postModel.find().populate('profId').sort({ 'createdAt': -1 });
+            return posts;
+        } catch (err) {
+            throw new Error('Failed to fetch posts!');
+        }
+    }
+
+    async getPortraits(id: string): Promise<Post | null> {
+        try {
+            let portraits: any = await postModel.find({ profId: id, isPortrait: true });
+            console.log(portraits);
+            return portraits;
+        } catch (err) {
+            throw new Error('Failed to fetch portrait!');
         }
     }
 }
