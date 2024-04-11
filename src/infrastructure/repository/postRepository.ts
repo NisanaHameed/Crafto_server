@@ -53,6 +53,32 @@ class PostRepository implements IPostRepository {
             throw new Error('Failed to fetch portrait!');
         }
     }
+    async likePost(id: string, userID: string): Promise<Boolean> {
+        try {
+            const updated = await postModel.updateOne({ _id: id }, { $addToSet: { likes: userID } });
+            return updated.acknowledged;
+        } catch (err) {
+            throw new Error('Failed to update the post');
+        }
+    }
+
+    async unlikePost(id: string, userId: string): Promise<Boolean> {
+        try {
+            const updated = await postModel.updateOne({ _id: id }, { $pull: { likes: userId } });
+            return updated.acknowledged;
+        } catch (err) {
+            throw new Error('Failed to update the post');
+        }
+    }
+
+    async getAPostById(id: string): Promise<Post | null> {
+        try {
+            const post = await postModel.findOne({ _id: id });
+            return post;
+        } catch (err) {
+            throw new Error('Failed to fetch post!');
+        }
+    }
 }
 
 export default PostRepository;

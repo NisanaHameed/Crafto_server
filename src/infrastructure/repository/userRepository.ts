@@ -1,6 +1,7 @@
 import User from "../../domain/user";
 import userInterface from "../../use_case/interface/IUserInterface";
 import UserModel from '../database/userModel'
+import ProfModel from "../database/profModel";
 
 class UserRepository implements userInterface {
 
@@ -40,6 +41,24 @@ class UserRepository implements userInterface {
         } catch (err) {
             console.log(err);
             throw new Error("Failed to update user")
+        }
+    }
+
+    async followProfessional(profId: string, userId: string): Promise<Boolean> {
+        try {
+            const followed = await ProfModel.updateOne({ _id: profId }, { $addToSet: { followers: userId } });
+            return followed.acknowledged;
+        } catch (err) {
+            throw new Error('Failed to follow');
+        }
+    }
+
+    async unfollowProf(profId: string, userId: string) {
+        try {
+            const unfollowed = await ProfModel.updateOne({ _id: profId }, { $pull: { followers: userId } });
+            return unfollowed.acknowledged
+        }catch(err){
+            throw new Error('failed to unfollow');
         }
     }
 

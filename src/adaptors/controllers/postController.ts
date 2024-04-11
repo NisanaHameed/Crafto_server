@@ -98,5 +98,91 @@ class PostController {
         }
 
     }
+
+    async likeByUSer(req: Request, res: Response) {
+        try {
+            let postid = req.params.id;
+            let userId = req.userId;
+            if (userId) {
+                const updated = await this.usecase.likePost(postid, userId)
+                if (updated) {
+                    res.status(200).json({ success: true });
+                } else {
+                    res.status(500).json({ success: false, message: 'Failed to update' })
+                }
+            } else {
+                res.status(401).json({ success: false, message: 'Please try again!' })
+            }
+        } catch (err) {
+            res.status(500).json({ success: false, message: 'Internal server error!' })
+        }
+    }
+
+    async unlikeByUser(req: Request, res: Response) {
+        try {
+            let postid = req.params.id;
+            let userId = req.userId;
+            if (userId) {
+                const updated = await this.usecase.unlikePost(postid, userId)
+                if (updated) {
+                    res.status(200).json({ success: true });
+                } else {
+                    res.status(500).json({ success: false, message: 'Failed to update' })
+                }
+            } else {
+                res.status(401).json({ success: false, message: 'Please try again!' })
+            }
+        } catch (err) {
+            res.status(500).json({ success: false, message: 'Internal server error!' })
+        }
+    }
+    async likeByProf(req: Request, res: Response) {
+        try {
+            let postid = req.params.id;
+            let userId = req.profId;
+
+            if (userId) {
+                const updated = await this.usecase.likePost(postid, userId)
+                if (updated) {
+                    res.status(200).json({ success: true });
+                } else {
+                    res.status(500).json({ success: false, message: 'Failed to update' })
+                }
+            } else {
+                res.status(401).json({ success: false, message: 'Please try again!' })
+            }
+        } catch (err) {
+            res.status(500).json({ success: false, message: 'Internal server error!' })
+        }
+    }
+
+    async unlikeByProf(req: Request, res: Response) {
+        try {
+            let postid = req.params.id;
+            let userId = req.profId;
+            if (userId) {
+                const updated = await this.usecase.unlikePost(postid, userId)
+                if (updated) {
+                    res.status(200).json({ success: true });
+                } else {
+                    res.status(500).json({ success: false, message: 'Failed to update' })
+                }
+            } else {
+                res.status(401).json({ success: false, message: 'Please try again!' })
+            }
+        } catch (err) {
+            res.status(500).json({ success: false, message: 'Internal server error!' })
+        }
+    }
+
+    async getAPostById(req: Request, res: Response) {
+        try {
+            let id = req.params.id as string;
+            const post = await this.usecase.getAPostBtId(id);
+            res.status(200).json({ success: true, post });
+        } catch (err) {
+            res.status(500).json({ success: false, message: 'Internal server error' });
+        }
+    }
 }
 export default PostController;

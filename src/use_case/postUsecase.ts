@@ -55,5 +55,30 @@ class PostUsecase {
             throw err;
         }
     }
+    async likePost(id: string, userId: string) {
+        try {
+            const updated = await this.repository.likePost(id, userId);
+            return updated;
+        } catch (err) {
+            throw err;
+        }
+    }
+    async unlikePost(id: string, userId: string) {
+        try {
+            const updated = await this.repository.unlikePost(id, userId);
+            return updated;
+        } catch (err) {
+            throw err;
+        }
+    }
+
+    async getAPostBtId(id: string) {
+        try {
+            const post = await this.repository.getAPostById(id);
+            return post;
+        } catch (err) {
+            throw err;
+        }
+    }
 }
 export default PostUsecase;

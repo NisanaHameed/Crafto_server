@@ -6,6 +6,7 @@ import HashPassword from '../infrastructure/utils/hashPassword';
 import JWT from '../infrastructure/utils/jwt';
 import jwt from 'jsonwebtoken'
 import Cloudinary from '../infrastructure/utils/cloudinary';
+import ConversationRepository from '../infrastructure/repository/conversationRepository';
 
 class Userusecase {
 
@@ -13,16 +14,18 @@ class Userusecase {
     private GenerateOTP: GenerateOTP;
     private sendOtp: SendOTP;
     private hash: HashPassword;
-    private cloudinary:Cloudinary
-    private jwt:JWT;
+    private cloudinary: Cloudinary
+    private jwt: JWT;
+    private conversation: ConversationRepository
 
-    constructor(userRpository: IUserInterface, GenerateOTP: GenerateOTP, sendOtp: SendOTP, hash: HashPassword, jwt: JWT,Cloudinary:Cloudinary) {
+    constructor(userRpository: IUserInterface, GenerateOTP: GenerateOTP, sendOtp: SendOTP, hash: HashPassword, jwt: JWT, Cloudinary: Cloudinary, conversation: ConversationRepository) {
         this.userRepository = userRpository;
         this.GenerateOTP = GenerateOTP;
         this.sendOtp = sendOtp;
         this.hash = hash;
         this.cloudinary = Cloudinary;
         this.jwt = jwt;
+        this.conversation = conversation;
     }
     async findUser(userData: User) {
         try {
@@ -132,10 +135,37 @@ class Userusecase {
             }
             let uploadFile = await this.cloudinary.uploadToCloud(editedData.image);
             editedData.image = uploadFile;
-            let res = await this.userRepository.updateUser(id,editedData);
+            let res = await this.userRepository.updateUser(id, editedData);
             return res;
         } catch (err) {
             console.log(err);
+            throw err;
+        }
+    }
+
+    async getConversations(id: string) {
+        try {
+            const conversations = await this.conversation.getConversations(id);
+            return conversations;
+        } catch (err) {
+            throw err;
+        }
+    }
+
+    async followProfessional(profId: string, userId: string) {
+        try {
+            const followed = await this.userRepository.followProfessional(profId, userId);
+            return followed;
+        } catch (err) {
+            throw err;
+        }
+    }
+
+    async unfollowProfessional(profId: string, userId: string) {
+        try {
+            const unfollowed = await this.userRepository.unfollowProf(profId, userId);
+            return unfollowed;
+        } catch (err) {
             throw err;
         }
     }

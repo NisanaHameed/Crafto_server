@@ -108,18 +108,32 @@ class UserController {
             const editedData = req.body
             let image = req.file;
             editedData.image = image;
-            if(userId){
-                let updated = await this.Userusecase.updateProfile(userId,editedData);
-                if(updated){
-                    res.status(200).json({success:true});
-                }else{
-                    res.status(500).json({success:false,message:'Not updated!'})
+            if (userId) {
+                let updated = await this.Userusecase.updateProfile(userId, editedData);
+                if (updated) {
+                    res.status(200).json({ success: true });
+                } else {
+                    res.status(500).json({ success: false, message: 'Not updated!' })
                 }
-            }else{
-                res.status(401).json({success:false,message:"Something went wrong!Try again!"})
-            } 
+            } else {
+                res.status(401).json({ success: false, message: "Something went wrong!Try again!" })
+            }
         } catch (err) {
             console.log(err);
+            res.status(500).json({ success: false, message: "Internal server error!" })
+        }
+    }
+
+    async getConversations(req: Request, res: Response) {
+        try {
+            let id = req.userId;
+            if (id) {
+                const conversations = await this.Userusecase.getConversations(id);
+                res.status(200).json({ success: true, conversations });
+            } else {
+                res.status(401).json({ success: false, message: 'Internal server error!' });
+            }
+        } catch (err) {
             res.status(500).json({ success: false, message: "Internal server error!" })
         }
     }
@@ -134,6 +148,40 @@ class UserController {
         } catch (err) {
             console.log(err);
 
+        }
+    }
+
+    async followProfessional(req: Request, res: Response) {
+        try {
+            console.log('in follow controller fn')
+            let userId = req.userId as string;
+            let profId = req.body.profId;
+
+            const followed = await this.Userusecase.followProfessional(profId, userId);
+            if (followed) {
+                res.status(200).json({ success: true });
+            } else {
+                res.status(500).json({ success: false, message: 'Internal server error!' })
+            }
+        }catch(err){
+            res.status(500).json({ success: false, message: err });
+        }
+    }
+
+    async unfollowProfessional(req: Request, res: Response) {
+        try {
+            console.log('in unfollow controller fn')
+            let userId = req.userId as string;
+            let profId = req.body.profId;
+
+            const unfollowed = await this.Userusecase.unfollowProfessional(profId, userId);
+            if (unfollowed) {
+                res.status(200).json({ success: true });
+            } else {
+                res.status(500).json({ success: false, message: 'Internal server error!' })
+            }
+        }catch(err){
+            res.status(500).json({ success: false, message: err });
         }
     }
 

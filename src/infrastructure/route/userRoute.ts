@@ -15,6 +15,7 @@ import PostUsecase from "../../use_case/postUsecase";
 import RequirementController from "../../adaptors/controllers/requirementController";
 import RequirementUsecase from "../../use_case/requirementUsecase";
 import RequirementRepository from "../repository/requirementRepository";
+import ConversationRepository from "../repository/conversationRepository";
 
 const repository = new UserRepository();
 const otp = new GenerateOTP();
@@ -22,8 +23,9 @@ const sendOtp = new SendMail();
 const hash = new HashPassword();
 const jwt = new JWT();
 const cloudinary = new Cloudinary();
+const conversation = new ConversationRepository()
 
-const useCase = new Userusecase(repository, otp, sendOtp, hash, jwt, cloudinary)
+const useCase = new Userusecase(repository, otp, sendOtp, hash, jwt, cloudinary, conversation)
 const controller = new UserController(useCase);
 
 const postRepository = new PostRepository();
@@ -42,14 +44,21 @@ router.post('/login', (req, res) => controller.login(req, res));
 router.post('/gsignup', (req, res) => controller.gsignup(req, res));
 router.get('/profile', authenticate, (req, res) => controller.getProfile(req, res));
 router.patch('/editProfile', authenticate, uploadFile.single('image'), (req, res) => controller.editProfile(req, res));
+router.post('/follow', authenticate, (req, res) => controller.followProfessional(req, res));
+router.post('/unfollow', authenticate, (req, res) => controller.unfollowProfessional(req, res));
 router.get('/logout', (req, res) => controller.logout(req, res));
 
 router.get('/designs/:category', (req, res) => postController.getDesigns(req, res));
 router.get('/allDesigns', (req, res) => postController.getAllPosts(req, res));
 router.get('/postsById/:id', (req, res) => postController.getPostsById(req, res));
+router.put('/like/:id', authenticate, (req, res) => postController.likeByUSer(req, res));
+router.put('/unlike/:id', authenticate, (req, res) => postController.unlikeByUser(req, res));
+router.get('/postDetails/:id', (req, res) => postController.getAPostById(req, res));
 
 router.post('/postRequirement', authenticate, (req, res) => reqController.saveRequirement(req, res));
 router.get('/requirements', authenticate, (req, res) => reqController.getRequirements(req, res));
 router.put('/updateReq', authenticate, (req, res) => reqController.updateRequirement(req, res));
+
+router.get('/conversations', authenticate, (req, res) => controller.getConversations(req, res));
 
 export default router;

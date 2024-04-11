@@ -1,3 +1,5 @@
+import { ObjectId } from "mongoose";
+
 interface Professional{
     id?:string,
     firstname:string,
@@ -10,7 +12,7 @@ interface Professional{
     company:string,
     bio:string,
     image:String,
-    followers:number,
+    followers:[string],
     isBlocked: boolean
 }
 

@@ -242,6 +242,7 @@ class ProfController {
         try {
             if (id) {
                 let profdata = await this.usecase.getProfile(id);
+                console.log(profdata);
                 res.status(200).json({ success: true, profdata })
             } else {
                 res.status(401).json({ success: false, message: "Incorrect ID" })

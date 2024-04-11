@@ -50,5 +50,7 @@ router.get('/designs/:category', (req, res) => postController.getDesigns(req, re
 router.get('/allDesigns', (req, res) => postController.getAllPosts(req, res));
 router.get('/portraits', authenticate, (req, res) => postController.getPortraits(req, res));
 router.get('/postsById/:id', (req, res) => postController.getPostsById(req, res));
+router.put('/like/:id', authenticate, (req, res) => postController.likeByProf(req, res));
+router.put('/unlike/:id', authenticate, (req, res) => postController.unlikeByProf(req, res))
 
 export default router;

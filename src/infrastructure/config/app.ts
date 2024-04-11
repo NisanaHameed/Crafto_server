@@ -1,10 +1,12 @@
 import express from 'express'
 import cors from 'cors'
 import cookieParser from 'cookie-parser'
-
 import userRoute from '../route/userRoute'
 import professionalRoute from '../route/profRoute'
 import adminRoute from '../route/adminRoute'
+import chatRoute from '../route/chatRoute'
+import socketServer from './socket'
+import http from 'http'
 
 export const createServer = () => {
     try {
@@ -26,12 +28,16 @@ export const createServer = () => {
         app.use('/api/', userRoute);
         app.use('/api/professional',professionalRoute);
         app.use('/api/admin',adminRoute);
+        app.use('/api/chat',chatRoute);
+
+        const server = http.createServer(app);
+        socketServer(server);
 
         app.use((req, res) => {
             res.status(404).send('It is Not Found');
         });
         
-        return app;
+        return server;
 
     } catch (err) {
         console.log(err);
