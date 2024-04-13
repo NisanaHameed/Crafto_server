@@ -54,6 +54,7 @@ router.get('/postsById/:id', (req, res) => postController.getPostsById(req, res)
 router.put('/like/:id', authenticate, (req, res) => postController.likeByUSer(req, res));
 router.put('/unlike/:id', authenticate, (req, res) => postController.unlikeByUser(req, res));
 router.get('/postDetails/:id', (req, res) => postController.getAPostById(req, res));
+router.put('/postComment', authenticate, (req, res) => postController.addCommentbyUser(req, res));
 
 router.post('/postRequirement', authenticate, (req, res) => reqController.saveRequirement(req, res));
 router.get('/requirements', authenticate, (req, res) => reqController.getRequirements(req, res));

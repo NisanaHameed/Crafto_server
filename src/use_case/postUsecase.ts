@@ -1,6 +1,6 @@
 import Post from "../domain/post";
 import Cloudinary from "../infrastructure/utils/cloudinary";
-import PostRepository from "../infrastructure/repository/postRepository";
+import PostRepository from "./interface/IPostRepository";
 
 class PostUsecase {
     private cloudinary: Cloudinary
@@ -76,6 +76,15 @@ class PostUsecase {
         try {
             const post = await this.repository.getAPostById(id);
             return post;
+        } catch (err) {
+            throw err;
+        }
+    }
+
+    async addComment(userId: string, postId: string, comment: string, type: string) {
+        try {
+            const result = await this.repository.addComment(userId, postId, comment, type);
+            return result;
         } catch (err) {
             throw err;
         }

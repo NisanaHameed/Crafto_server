@@ -184,5 +184,37 @@ class PostController {
             res.status(500).json({ success: false, message: 'Internal server error' });
         }
     }
+
+    async addCommentbyUser(req: Request, res: Response) {
+        try {
+            let userId = req.userId as string;
+            let postId = req.body.postId;
+            let comment = req.body.comment;
+            let result = await this.usecase.addComment(userId, postId, comment, 'User');
+            if (result) {
+                res.status(200).json({ success: true });
+            } else {
+                res.status(500).json({ success: false, message: 'Internal server error' });
+            }
+        } catch (err) {
+            res.status(500).json({ success: false, message: err });
+        }
+    }
+
+    async addCommentbyProf(req: Request, res: Response) {
+        try {
+            let userId = req.profId as string;
+            let postId = req.body.postId;
+            let comment = req.body.comment;
+            let result = await this.usecase.addComment(userId, postId, comment, 'Professional');
+            if (result) {
+                res.status(200).json({ success: true });
+            } else {
+                res.status(500).json({ success: false, message: 'Internal server error' });
+            }
+        } catch (err) {
+            res.status(500).json({ success: false, message: err });
+        }
+    }
 }
 export default PostController;

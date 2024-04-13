@@ -9,6 +9,7 @@ interface IPostRepository {
     likePost(id: string, userId: string): Promise<Boolean>
     unlikePost(id: string, userId: string): Promise<Boolean>
     getAPostById(id: string): Promise<Post | null>
+    addComment(userId: string, postId: string, comment: string,type:string): Promise<Boolean>
 }
 
 export default IPostRepository;

@@ -73,12 +73,33 @@ class PostRepository implements IPostRepository {
 
     async getAPostById(id: string): Promise<Post | null> {
         try {
-            const post = await postModel.findOne({ _id: id });
+            const post = await postModel.findOne({ _id: id }).populate('profId').populate('comments.user');
+            if(post){
+                post.comments.sort((a,b)=>b.createdAt.getTime()-a.createdAt.getTime());
+            }
             return post;
         } catch (err) {
             throw new Error('Failed to fetch post!');
         }
     }
+    async addComment(userId: string, postId: string, comment: string,type:string): Promise<Boolean> {
+        try {
+            const result = await postModel.updateOne({ _id: postId }, {
+                $push: {
+                    comments: {
+                        user: userId,
+                        text: comment,
+                        createdAt: new Date(),
+                        type: type
+                    }
+                }
+            });
+            return result.acknowledged;
+        } catch (err) {
+            throw new Error('Failed to save comment');
+        }
+    }
+
 }
 
 export default PostRepository;

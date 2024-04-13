@@ -52,5 +52,6 @@ router.get('/portraits', authenticate, (req, res) => postController.getPortraits
 router.get('/postsById/:id', (req, res) => postController.getPostsById(req, res));
 router.put('/like/:id', authenticate, (req, res) => postController.likeByProf(req, res));
 router.put('/unlike/:id', authenticate, (req, res) => postController.unlikeByProf(req, res))
+router.put('/postComment', authenticate, (req, res) => postController.addCommentbyProf(req, res));
 
 export default router;
