@@ -1,16 +1,6 @@
 import mongoose, { Document, Schema } from "mongoose"
 import User from "../../domain/user"
 
-// interface User extends Document {
-//     name: string,
-//     email: string,
-//     mobile: number,
-//     password: string,
-//     city: string,
-//     following: string[],
-//     isBlocked: Boolean
-// }
-
 const userSchema: Schema<User> = new mongoose.Schema({
     name: {
         type: String,
@@ -35,14 +25,21 @@ const userSchema: Schema<User> = new mongoose.Schema({
         ref: 'Professional',
         default: []
     },
-    image:{
-        type:String
+    image: {
+        type: String
     },
     isBlocked: {
         type: Boolean,
         default: false
-    }
+    },
+    savedPosts: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Post',
+            default: []
+        }
+    ]
 })
 
-const UserModel = mongoose.model<User>('User',userSchema);
+const UserModel = mongoose.model<User>('User', userSchema);
 export default UserModel;

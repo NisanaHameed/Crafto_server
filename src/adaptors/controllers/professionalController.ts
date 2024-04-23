@@ -1,5 +1,6 @@
 import { Request, Response } from 'express'
 import Usecase from '../../use_case/profUsecase'
+import Subscription from '../../domain/subscription';
 
 class ProfController {
     private usecase;
@@ -250,6 +251,99 @@ class ProfController {
         } catch (err) {
             console.log(err);
             res.status(500).json({ success: false, message: "Internal server error" })
+        }
+    }
+
+    async savePost(req: Request, res: Response) {
+        try {
+            let profId = req.profId;
+            let postId = req.params.id;
+            let save = req.params.save;
+            let saved = await this.usecase.savePost(postId, profId as string, save);
+            if (saved) {
+                res.status(200).json({ success: true });
+            } else {
+                res.status(500).json({ success: false, message: 'Internal server error!' });
+            }
+        } catch (err) {
+            res.status(500).json({ success: false, message: err });
+        }
+    }
+
+    async subscribe(req: Request, res: Response) {
+        try {
+            let profId = req.profId;
+            let plan = req.params.plan;
+            console.log('In subscribe controller')
+            const stripe = await this.usecase.subscribe(profId as string, plan);
+            res.status(200).json({ success: true, stripe });
+
+        } catch (err) {
+            res.status(500).json({ success: false, message: 'Internal server error!' });
+        }
+    }
+
+    async webhook(req: Request, res: Response) {
+        console.log('in webhook controller')
+        console.log(req.body.type)
+        try {
+            switch (req.body.type) {
+                case 'customer.subscription.created':
+                    console.log('subscription',req.body.data.object);
+                    
+                    const subscription = req.body.data.object;
+                    console.log('Amount ',subscription.plan.amount)
+                    let planType = '' ;
+                    if(subscription.plan.id=='price_1P7yVpSCG87ABkwC64tgfuOh'){
+                        planType = 'Monthly';
+                    }else if(subscription.plan.id=='price_1P7zsESCG87ABkwCAjgopRuS'){
+                        planType = 'Yearly';
+                    }
+                    const data = {
+                        subscriptionId:subscription.id,
+                        plan:{
+                            planType,
+                            amount:subscription.plan.amount/100
+                        },
+                        startDate:subscription.current_period_start,
+                        endDate:subscription.current_period_end,
+                        createdAt:subscription.start_date,
+                        status:'Active'
+                    }
+                    console.log('data',data);
+                    console.log('metaData',req.body.data.object.metaData);
+                    const newSubscription = await this.usecase.createSubscription(data as Subscription);
+                    break;
+                    // const startDate = subscription.start_date;
+                    // const currentPeriodStart = subscription.current_period_start;
+                    // const currentPeriodEnd = subscription.current_period_end;
+                case 'checkout.session.completed':
+                    const session = req.body.data.object;
+                    console.log(session);
+                    console.log('sessionId', session.id)
+                    const subscriptionId = session.subscription;
+                    console.log(subscriptionId);
+                    const result = await this.usecase.webhook(session.metadata.userId, subscriptionId);
+                    break;
+                default:
+                    console.log('Unhandled event type');
+            }
+            res.json({ received: true });
+        } catch (err) {
+            res.status(400).send(`Webhook Error: ${err}`);
+            return;
+        }
+    }
+
+    async cancelSubscription(req: Request, res: Response) {
+        try {
+            let profId = req.profId;
+            const cancelled = await this.usecase.cancelSubscription(profId as string);
+            if (cancelled) {
+                res.status(200).json({ success: true, message: 'Internal server error' });
+            }
+        } catch (err) {
+            res.status(500).json({ success: false, message: 'Internal server error!' });
         }
     }
 }

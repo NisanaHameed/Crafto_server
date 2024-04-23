@@ -13,7 +13,10 @@ interface Professional{
     bio:string,
     image:String,
     followers:[string],
-    isBlocked: boolean
+    isBlocked: boolean,
+    savedPosts:[ObjectId],
+    subscriptionID:string,
+    isVerified:boolean
 }
 
 export default Professional;

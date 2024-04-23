@@ -10,6 +10,7 @@ interface IRequirement{
     type?:string,
     scope?:string,
     plan?:string,
-    status?:string
+    status?:string,
+    createdAt:Date
 }
 export default IRequirement;

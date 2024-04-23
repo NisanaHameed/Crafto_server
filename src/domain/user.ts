@@ -7,7 +7,8 @@ interface User {
     password: string,
     following:Array<string>,
     isBlocked: boolean,
-    image:string
+    image:string,
+    savedPosts: Array<string>
 }
 
 export default User;

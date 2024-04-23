@@ -46,6 +46,7 @@ router.get('/profile', authenticate, (req, res) => controller.getProfile(req, re
 router.patch('/editProfile', authenticate, uploadFile.single('image'), (req, res) => controller.editProfile(req, res));
 router.post('/follow', authenticate, (req, res) => controller.followProfessional(req, res));
 router.post('/unfollow', authenticate, (req, res) => controller.unfollowProfessional(req, res));
+router.patch('/savePost/:id/:save', authenticate, (req, res) => controller.savePost(req, res));
 router.get('/logout', (req, res) => controller.logout(req, res));
 
 router.get('/designs/:category', (req, res) => postController.getDesigns(req, res));

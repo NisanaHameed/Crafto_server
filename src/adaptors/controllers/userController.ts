@@ -163,7 +163,7 @@ class UserController {
             } else {
                 res.status(500).json({ success: false, message: 'Internal server error!' })
             }
-        }catch(err){
+        } catch (err) {
             res.status(500).json({ success: false, message: err });
         }
     }
@@ -180,7 +180,23 @@ class UserController {
             } else {
                 res.status(500).json({ success: false, message: 'Internal server error!' })
             }
-        }catch(err){
+        } catch (err) {
+            res.status(500).json({ success: false, message: err });
+        }
+    }
+
+    async savePost(req: Request, res: Response) {
+        try {
+            let userId = req.userId;
+            let postId = req.params.id;
+            let save = req.params.save;
+            let saved = await this.Userusecase.savePost(postId, userId as string, save);
+            if (saved) {
+                res.status(200).json({ success: true });
+            } else {
+                res.status(500).json({ success: false, message: 'Internal server error!' });
+            }
+        } catch (err) {
             res.status(500).json({ success: false, message: err });
         }
     }

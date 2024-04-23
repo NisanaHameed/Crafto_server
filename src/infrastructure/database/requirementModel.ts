@@ -38,6 +38,11 @@ const requirementSchema:Schema<IRequirement> = new mongoose.Schema({
     status:{
         type:String,
         default:'active'
+    },
+    createdAt:{
+        type:Date,
+        required:true,
+        default:Date.now()
     }
 })
 

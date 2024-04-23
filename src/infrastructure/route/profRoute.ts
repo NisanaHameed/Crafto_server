@@ -11,6 +11,13 @@ import authenticate from "../middleware/profAuth";
 import PostController from "../../adaptors/controllers/postController";
 import PostUsecase from "../../use_case/postUsecase";
 import PostRepository from "../repository/postRepository";
+import NotificationRepository from "../repository/notificationRepository";
+import NotificationUsecase from "../../use_case/notificationUsecase";
+import NotificationController from "../../adaptors/controllers/notificationController";
+import RequirementController from "../../adaptors/controllers/requirementController";
+import RequirementUsecase from "../../use_case/requirementUsecase";
+import RequirementRepository from "../repository/requirementRepository";
+import StripePayment from "../utils/stripe";
 
 const jwt = new JWT();
 const hash = new HashPassword();
@@ -18,14 +25,23 @@ const sendMail = new SendMail();
 const otp = new GenerateOTP();
 const repository = new ProfRepository();
 const cloudinary = new Cloudinary();
+const stripe = new StripePayment();
 import { uploadFile } from "../middleware/multer";
 
-const useCase = new ProfUsecase(repository, otp, sendMail, hash, jwt, cloudinary);
+const useCase = new ProfUsecase(repository, otp, sendMail, hash, jwt, cloudinary, stripe);
 const controller = new ProfController(useCase);
 
 const postRepository = new PostRepository();
 const postUsecase = new PostUsecase(cloudinary, postRepository);
 const postController = new PostController(postUsecase);
+
+const notificationRepository = new NotificationRepository();
+const notificationUsecase = new NotificationUsecase(notificationRepository);
+const notificationController = new NotificationController(notificationUsecase);
+
+const reqRepository = new RequirementRepository();
+const reqUsecase = new RequirementUsecase(reqRepository);
+const reqController = new RequirementController(reqUsecase);
 
 const router = express.Router();
 
@@ -42,6 +58,9 @@ router.put('/verifyEmailOtp', authenticate, (req, res) => controller.changeEmail
 router.patch('/editPassword', authenticate, (req, res) => controller.editPassword(req, res));
 router.get('/professionals', authenticate, (req, res) => controller.getProfessionals(req, res));
 router.get('/profDetails/:id', (req, res) => controller.getAProfessional(req, res));
+router.patch('/savePost/:id/:save', authenticate, (req, res) => controller.savePost(req, res));
+router.post('/subscribe/:plan', authenticate, (req, res) => controller.subscribe(req, res));
+router.delete('/cancelSubscription', authenticate, (req, res) => controller.cancelSubscription(req, res));
 router.get('/logout', (req, res) => controller.logout(req, res));
 
 router.post('/createPost', authenticate, uploadFile.single('image'), (req, res) => postController.createPost(req, res));
@@ -53,5 +72,11 @@ router.get('/postsById/:id', (req, res) => postController.getPostsById(req, res)
 router.put('/like/:id', authenticate, (req, res) => postController.likeByProf(req, res));
 router.put('/unlike/:id', authenticate, (req, res) => postController.unlikeByProf(req, res))
 router.put('/postComment', authenticate, (req, res) => postController.addCommentbyProf(req, res));
+
+router.get('/notifications', authenticate, (req, res) => notificationController.getNotifications(req, res));
+router.patch('/updateNotification/:id', authenticate, (req, res) => notificationController.updateNotification(req, res));
+
+router.get('/requirements', authenticate, (req, res) => reqController.getRequirementsByService(req, res));
+router.post('/webhook', (req, res) => controller.webhook(req, res));
 
 export default router;

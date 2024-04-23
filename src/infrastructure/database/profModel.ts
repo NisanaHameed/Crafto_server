@@ -44,6 +44,20 @@ const ProfSchema: Schema<Professional> = new mongoose.Schema({
     isBlocked: {
         type: Boolean,
         default: false
+    },
+    savedPosts: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Post',
+            default: []
+        }
+    ],
+    subscriptionID: {
+        type: String
+    },
+    isVerified: {
+        type: Boolean,
+        default: false
     }
 })
 

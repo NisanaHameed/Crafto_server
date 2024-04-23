@@ -169,5 +169,14 @@ class Userusecase {
             throw err;
         }
     }
+
+    async savePost(postId: string, userId: string, save: string) {
+        try {
+            const saved = await this.userRepository.savePost(postId, userId, save);
+            return saved;
+        } catch (err) {
+            throw err;
+        }
+    }
 }
 export default Userusecase;

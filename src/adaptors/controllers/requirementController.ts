@@ -12,15 +12,13 @@ class RequirementController {
     async saveRequirement(req: Request, res: Response) {
         try {
             let id = req.userId;
-            console.log(id)
-            console.log(req.body)
             let reqs = req.body;
             reqs.userId = id;
-            console.log(reqs)
+            reqs.createdAt = Date.now();
             let result = await this.usecase.saveReq(reqs);
             console.log(result);
             if (result) {
-                res.status(200).json({ success: true })
+                res.status(200).json({ success: true, requirement: result });
             } else {
                 res.status(500).json({ success: false, message: 'Internal server error' })
             }
@@ -52,6 +50,16 @@ class RequirementController {
 
         } catch (err) {
             res.status(500).json({ success: false, message: 'Internal server error!' })
+        }
+    }
+
+    async getRequirementsByService(req: Request, res: Response) {
+        try {
+            let profId = req.profId;
+            const requirements = await this.usecase.getRequirementsByService(profId as string);
+            res.status(200).json({ success: true, requirements });
+        } catch (err) {
+            res.status(500).json({ success: false, message: 'Internal server error!' });
         }
     }
 }

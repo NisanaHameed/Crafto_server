@@ -6,6 +6,8 @@ import HashPassword from "../infrastructure/utils/hashPassword";
 import JWT from "../infrastructure/utils/jwt";
 import jwt from 'jsonwebtoken';
 import Cloudinary from "../infrastructure/utils/cloudinary";
+import StripePayment from "../infrastructure/utils/stripe";
+import Subscription from "../domain/subscription";
 
 class ProfUsecase {
     private profRepository: profRepository;
@@ -14,14 +16,16 @@ class ProfUsecase {
     private hash: HashPassword;
     private jwt: JWT;
     private cloudinary: Cloudinary;
+    private stripe: StripePayment
 
-    constructor(repo: profRepository, otp: GenerateOTP, mail: SendMail, hash: HashPassword, jwt: JWT, cloudinary: Cloudinary) {
+    constructor(repo: profRepository, otp: GenerateOTP, mail: SendMail, hash: HashPassword, jwt: JWT, cloudinary: Cloudinary, stripe: StripePayment) {
         this.profRepository = repo
         this.generateOtp = otp
         this.sendMail = mail
         this.hash = hash
         this.jwt = jwt
         this.cloudinary = cloudinary
+        this.stripe = stripe;
     }
     async findProf(profData: Professional) {
         try {
@@ -224,6 +228,60 @@ class ProfUsecase {
             throw err;
         }
     }
+
+    async savePost(postId: string, profId: string, save: string) {
+        try {
+            const saved = await this.profRepository.savePost(postId, profId, save);
+            return saved;
+        } catch (err) {
+            throw err;
+        }
+    }
+
+    async createSubscription(data: Subscription) {
+        try {
+            const result = await this.profRepository.createSubscription(data);
+            return result;
+        } catch (err) {
+            throw err;
+        }
+    }
+
+    async subscribe(profId: string, plan: string) {
+        try {
+            console.log('in stripe usecase')
+
+            const prof: any = await this.profRepository.findProfById(profId);
+            const stripeRes = await this.stripe.makePayment(prof.email, plan, profId);
+            // const updateProf = await this.profRepository.updateProfile(profId, { stripeSessionId: stripeRes } as Professional);
+            return stripeRes;
+        } catch (err) {
+            return err;
+        }
+    }
+
+    async webhook(profId: string, subscriptionId: string) {
+        try {
+            const updateSubscription = await this.profRepository.updateSubscription(profId, subscriptionId);
+            const prof = await this.profRepository.updateProfile(profId, { isVerified: true, subscriptionID: subscriptionId } as Professional);
+            return prof && updateSubscription;
+        } catch (err) {
+            throw err;
+        }
+    }
+
+    async cancelSubscription(profId: string) {
+        try {
+            const updateSubscription = await this.profRepository.updateSubscription(profId, '');
+            const prof: any = await this.profRepository.findProfById(profId);
+            await this.stripe.cancelSubscription(prof?.subscriptionID);
+            const updated = await this.profRepository.updateIsVerified(profId);
+            return updated;
+        } catch (err) {
+            throw err;
+        }
+    }
+
 }
 
 export default ProfUsecase;

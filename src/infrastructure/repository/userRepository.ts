@@ -2,6 +2,7 @@ import User from "../../domain/user";
 import userInterface from "../../use_case/interface/IUserInterface";
 import UserModel from '../database/userModel'
 import ProfModel from "../database/profModel";
+import postModel from "../database/postModel";
 
 class UserRepository implements userInterface {
 
@@ -26,7 +27,10 @@ class UserRepository implements userInterface {
     }
     async findUserById(id: string): Promise<User | null> {
         try {
-            let userdata: User | null = await UserModel.findById(id);
+            let userdata: User | null = await UserModel.findById(id).populate({
+                path: 'savedPosts',
+                populate: { path: 'profId' }
+            });
             return userdata
         } catch (err) {
             console.log(err);
@@ -57,8 +61,30 @@ class UserRepository implements userInterface {
         try {
             const unfollowed = await ProfModel.updateOne({ _id: profId }, { $pull: { followers: userId } });
             return unfollowed.acknowledged
-        }catch(err){
+        } catch (err) {
             throw new Error('failed to unfollow');
+        }
+    }
+
+    async savePost(postId: string, userId: string, save: string): Promise<Boolean> {
+        try {
+            let saved = false;
+            if (save === 'true') {
+                const [savedUserIdInPost, savedInUser] = await Promise.all([
+                    postModel.updateOne({ _id: postId }, { $addToSet: { saved: userId } }),
+                    UserModel.updateOne({ _id: userId }, { $addToSet: { savedPosts: postId } })
+                ])
+                saved = savedUserIdInPost.acknowledged && savedInUser.acknowledged;
+            } else {
+                const [unsavedUserIdInPost, unsavedInUser] = await Promise.all([
+                    postModel.updateOne({ _id: postId }, { $pull: { saved: userId } }),
+                    UserModel.updateOne({ _id: userId }, { $pull: { savedPosts: postId } })
+                ])
+                saved = unsavedUserIdInPost.acknowledged && unsavedInUser.acknowledged;
+            }
+            return saved;
+        } catch (err) {
+            throw new Error('Failed to save post!');
         }
     }
 

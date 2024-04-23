@@ -35,6 +35,15 @@ class RequirementUsecase {
             throw err;
         }
     }
+
+    async getRequirementsByService(profId: string) {
+        try {
+            const requirements = await this.repository.getRequirementsByService(profId);
+            return requirements;
+        } catch (err) {
+            throw err;
+        }
+    }
 }
 
 export default RequirementUsecase;

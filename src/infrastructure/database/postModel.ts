@@ -51,6 +51,13 @@ const postSchema: Schema<Post> = new mongoose.Schema({
                 required: true
             }
         }
+    ],
+    saved:[
+        {
+            type:Schema.Types.ObjectId,
+            ref:'User',
+            default: []
+        }
     ]
 }, { timestamps: true });
 
