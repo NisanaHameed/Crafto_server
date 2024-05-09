@@ -2,9 +2,9 @@ import { v2 } from "cloudinary";
 import ICloudinary from "../../use_case/interface/ICloudinary";
 
 v2.config({
-    cloud_name:process.env.cloud_name,
-    api_key:process.env.cloud_key,
-    api_secret:process.env.cloud_secret
+    cloud_name:process.env.CLOUD_NAME,
+    api_key:process.env.CLOUD_KEY,
+    api_secret:process.env.CLOUD_SECRET
 });
 
 class Cloudinary implements ICloudinary {

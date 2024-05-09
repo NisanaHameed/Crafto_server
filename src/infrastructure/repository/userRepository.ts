@@ -88,6 +88,17 @@ class UserRepository implements userInterface {
         }
     }
 
+    async changePassword(email: string, password: string): Promise<boolean> {
+        try {
+            let result = await UserModel.updateOne({ email: email }, { $set: { password: password } });
+            console.log(result)
+            return result.acknowledged;
+        } catch (err) {
+            console.log(err);
+            throw new Error('failed to update password!');
+        }
+    }
+
 }
 
 export default UserRepository;

@@ -25,8 +25,16 @@ const postSchema: Schema<Post> = new mongoose.Schema({
     },
     likes: [
         {
-            type: String,
-            default: []
+            user: {
+                type: mongoose.Schema.Types.ObjectId,
+                refPath: 'likes.type',
+                required: true
+            },
+            type: {
+                type: String,
+                enum: ['User', 'Professional'],
+                required: true
+            }
         }
     ],
     comments: [
@@ -52,10 +60,10 @@ const postSchema: Schema<Post> = new mongoose.Schema({
             }
         }
     ],
-    saved:[
+    saved: [
         {
-            type:Schema.Types.ObjectId,
-            ref:'User',
+            type: Schema.Types.ObjectId,
+            ref: 'User',
             default: []
         }
     ]

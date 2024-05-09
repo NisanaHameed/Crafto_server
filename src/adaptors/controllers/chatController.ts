@@ -56,7 +56,7 @@ class ChatController {
             const data = req.body;
             const message = await this.usecase.newMessage(data);
             if (message) {
-                res.status(200).json({ success: true });
+                res.status(200).json({ success: true ,message});
             } else {
                 res.status(500).json({ success: false, message: 'Message is not saved.try again' })
             }

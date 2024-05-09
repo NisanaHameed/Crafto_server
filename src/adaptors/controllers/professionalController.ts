@@ -39,6 +39,17 @@ class ProfController {
             res.status(500).json({ success: false, message: 'Internal server error!' });
         }
     }
+
+    async resendOtp(req: Request, res: Response) {
+        try {
+            let token = req.headers.authorization?.split(' ')[1] as string;
+            let newToken = await this.usecase.resendOtp(token);
+            res.status(200).json({ success: true, newToken });
+        } catch (err) {
+            res.status(500).json({ success: false, message: 'Internal server error!' });
+        }
+    }
+
     async fillProfile(req: Request, res: Response) {
         try {
             console.log('In fillProfile controller');
@@ -223,6 +234,52 @@ class ProfController {
         }
     }
 
+    async forgotPassword(req: Request, res: Response) {
+        try {
+            console.log('its here.........')
+            let email = req.body.email;
+            const data = await this.usecase.forgotPassword(email);
+            if (!data.data) {
+                res.status(402).json({ success: false, message: 'Email not found!' });
+            } else {
+                res.status(200).json({ success: true, token: data.token });
+            }
+        } catch (err) {
+            res.status(500).json({ success: false, message: 'Internal server error!' });
+        }
+    }
+
+    async verifyOtpForgotPassword(req: Request, res: Response) {
+        try {
+            let token = req.headers.authorization?.split(' ')[1] as string;
+            console.log('token in controller...', token)
+            let otp = req.body.otp;
+            const result = await this.usecase.verifyOtpForgotPassword(token, otp);
+            if (result) {
+                res.status(200).json({ success: true });
+            } else {
+                res.status(402).json({ success: false, message: 'Incorrect OTP!' });
+            }
+        } catch (err) {
+            res.status(500).json({ success: false, message: 'Internal server error!' });
+        }
+    }
+
+    async changePassword(req: Request, res: Response) {
+        try {
+            let token = req.headers.authorization?.split(' ')[1] as string;
+            let password = req.body.password;
+            const result = await this.usecase.changePassword(token, password);
+            if (result) {
+                res.status(200).json({ success: true });
+            } else {
+                res.status(402).json({ success: false, message: 'Failed to change the password!' })
+            }
+        } catch (err) {
+            res.status(500).json({ success: false, message: 'Internal server error!' });
+        }
+    }
+
     async getProfessionals(req: Request, res: Response) {
         try {
             let id = req.profId;
@@ -289,34 +346,33 @@ class ProfController {
         try {
             switch (req.body.type) {
                 case 'customer.subscription.created':
-                    console.log('subscription',req.body.data.object);
-                    
+                    console.log('subscription', req.body.data.object);
+
                     const subscription = req.body.data.object;
-                    console.log('Amount ',subscription.plan.amount)
-                    let planType = '' ;
-                    if(subscription.plan.id=='price_1P7yVpSCG87ABkwC64tgfuOh'){
+                    console.log('Amount ', subscription.plan.amount)
+                    let planType = '';
+                    if (subscription.plan.id == 'price_1P7yVpSCG87ABkwC64tgfuOh') {
                         planType = 'Monthly';
-                    }else if(subscription.plan.id=='price_1P7zsESCG87ABkwCAjgopRuS'){
+                    } else if (subscription.plan.id == 'price_1P7zsESCG87ABkwCAjgopRuS') {
                         planType = 'Yearly';
                     }
+                    const currentPeriodStart = new Date(subscription.current_period_start * 1000);
+                    const currentPeriodEnd = new Date(subscription.current_period_end * 1000);
                     const data = {
-                        subscriptionId:subscription.id,
-                        plan:{
+                        subscriptionId: subscription.id,
+                        plan: {
                             planType,
-                            amount:subscription.plan.amount/100
+                            amount: subscription.plan.amount / 100
                         },
-                        startDate:subscription.current_period_start,
-                        endDate:subscription.current_period_end,
-                        createdAt:subscription.start_date,
-                        status:'Active'
+                        startDate: currentPeriodStart,
+                        endDate: currentPeriodEnd,
+                        createdAt: new Date(subscription.created * 1000),
+                        status: 'Active'
                     }
-                    console.log('data',data);
-                    console.log('metaData',req.body.data.object.metaData);
+                    console.log('data', data);
+                    console.log('metaData', req.body.data.object.metaData);
                     const newSubscription = await this.usecase.createSubscription(data as Subscription);
                     break;
-                    // const startDate = subscription.start_date;
-                    // const currentPeriodStart = subscription.current_period_start;
-                    // const currentPeriodEnd = subscription.current_period_end;
                 case 'checkout.session.completed':
                     const session = req.body.data.object;
                     console.log(session);
@@ -325,6 +381,10 @@ class ProfController {
                     console.log(subscriptionId);
                     const result = await this.usecase.webhook(session.metadata.userId, subscriptionId);
                     break;
+                case 'invoice.payment_failed':
+                    const failedPaymentInfo = req.body.object;
+                    const userId = failedPaymentInfo.metadata.userId;
+                    await this.usecase.handlePaymentFailure(userId);
                 default:
                     console.log('Unhandled event type');
             }

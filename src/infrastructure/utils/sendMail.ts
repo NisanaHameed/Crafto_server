@@ -11,7 +11,7 @@ class SendMail implements nodemailerInterface{
             service: 'gmail',
             auth:{
                 user:'nisana1994@gmail.com',
-                pass:process.env.gmail_password
+                pass:process.env.GMAIL_PASSWORD
             }
         })
     }

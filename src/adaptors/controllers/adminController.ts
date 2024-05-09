@@ -25,6 +25,16 @@ class AdminController {
             res.status(500).json({ success: false, message: "Internal server error" })
         }
     }
+
+    async getDashboard(req: Request, res: Response) {
+        try {
+            const data = await this.usecase.getDashboard();
+            res.status(200).json({ success: true, data });
+        } catch (err) {
+            res.status(500).json({ success: false, message: 'Internal server error!' });
+        }
+    }
+
     async getUsers(req: Request, res: Response) {
         try {
             let users = await this.usecase.getUsers();
@@ -124,43 +134,43 @@ class AdminController {
         }
     }
 
-    async getJobrole(req:Request,res:Response){
-        try{
+    async getJobrole(req: Request, res: Response) {
+        try {
             const jobroles = await this.usecase.getJobrole();
-            res.status(200).json({success:true,jobroles});
-        }catch(err){
+            res.status(200).json({ success: true, jobroles });
+        } catch (err) {
             res.status(500).json({ success: false, message: 'Internal server error!' })
         }
     }
 
-    async deleteJobrole(req:Request,res:Response){
-        try{
+    async deleteJobrole(req: Request, res: Response) {
+        try {
             let id = req.params.id;
             console.log(id)
             let deleted = await this.usecase.deleteJobrole(id);
-            if(deleted){
-                res.status(200).json({success:true});
-            }else{
-                res.status(500).json({success:false,message:'Something went wrong!'});
+            if (deleted) {
+                res.status(200).json({ success: true });
+            } else {
+                res.status(500).json({ success: false, message: 'Something went wrong!' });
             }
-        }catch(err){
+        } catch (err) {
             console.log(err);
-            res.status(500).json({success:false,message:'Internal server error!'});
+            res.status(500).json({ success: false, message: 'Internal server error!' });
         }
     }
 
-    async editJobrole(req:Request,res:Response){
-        try{
-            let {id,name} = req.body;
-            let saved = await this.usecase.editJobrole(id,name);
-            if(saved){
-                res.status(200).json({success:true});
-            }else{
-                res.status(500).json({success:false,message:'Something went wrong!'})
+    async editJobrole(req: Request, res: Response) {
+        try {
+            let { id, name } = req.body;
+            let saved = await this.usecase.editJobrole(id, name);
+            if (saved) {
+                res.status(200).json({ success: true });
+            } else {
+                res.status(500).json({ success: false, message: 'Something went wrong!' })
             }
-        }catch(err){
+        } catch (err) {
             console.log(err);
-            res.status(500).json({success:false,message:err});
+            res.status(500).json({ success: false, message: err });
         }
     }
 
@@ -174,6 +184,25 @@ class AdminController {
         } catch (err) {
             console.log(err);
 
+        }
+    }
+
+    async getSubscriptions(req: Request, res: Response) {
+        try {
+            const subscriptions = await this.usecase.getSubscriptions();
+            res.status(200).json({ success: true, subscriptions });
+        } catch (err) {
+            res.status(500).json({ success: false, message: 'Internal server error' });
+        }
+    }
+
+    async getASubscription(req: Request, res: Response) {
+        let id = req.params.id;
+        try {
+            const subscription = await this.usecase.getASubscription(id);
+            res.status(200).json({ success: true, subscription });
+        } catch (err) {
+            res.status(500).json({ success: false, message: 'Internal server error' });
         }
     }
 }

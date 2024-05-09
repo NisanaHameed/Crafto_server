@@ -2,7 +2,7 @@ import Message from "../../domain/message";
 import Chat from "../../domain/message"
 
 interface IMessageRepository{
-    saveMessage(chat:Chat):Promise<Boolean | null>
+    saveMessage(chat:Chat):Promise<Message | null>
     findMessages(conversationId:string):Promise<Message | null>
 }
 

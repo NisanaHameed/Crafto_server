@@ -1,5 +1,5 @@
 import IRequirement from "../domain/requirement";
-import IRequirementRepository from "./interface/IReuirementRepository";
+import IRequirementRepository from "./interface/IRequirementRepository";
 
 class RequirementUsecase {
 

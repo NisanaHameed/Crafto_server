@@ -60,8 +60,10 @@ class PostController {
 
     async getAllPosts(req: Request, res: Response) {
         try {
-            let posts = await this.usecase.getAllPosts();
-            res.status(200).json({ success: true, posts });
+            let page = req.query.page || 1;
+            let limit = parseInt(req.query.limit as string);
+            let data = await this.usecase.getAllPosts(page as number,limit);
+            res.status(200).json({ success: true, posts:data?.posts });
         } catch (err) {
             res.status(500).json({ success: false, message: err });
         }
@@ -104,7 +106,7 @@ class PostController {
             let postid = req.params.id;
             let userId = req.userId;
             if (userId) {
-                const updated = await this.usecase.likePost(postid, userId)
+                const updated = await this.usecase.likePost(postid, userId,'User')
                 if (updated) {
                     res.status(200).json({ success: true });
                 } else {
@@ -142,7 +144,7 @@ class PostController {
             let userId = req.profId;
 
             if (userId) {
-                const updated = await this.usecase.likePost(postid, userId)
+                const updated = await this.usecase.likePost(postid, userId,'Professional')
                 if (updated) {
                     res.status(200).json({ success: true });
                 } else {
@@ -214,6 +216,17 @@ class PostController {
             }
         } catch (err) {
             res.status(500).json({ success: false, message: err });
+        }
+    }
+
+    async searchDesigns(req: Request, res: Response) {
+        try {
+            let { searchTerm, category, sort, page, limit } = req.query;
+            console.log('sort',sort)
+            const data = await this.usecase.searchDesigns(searchTerm as string, category as string, parseInt(sort as string), parseInt(page as string), parseInt(limit as string));
+            res.status(200).json({ success: true, data });
+        } catch (err) {
+            res.status(500).json({ success: false, message: 'Internal server error!' });
         }
     }
 }

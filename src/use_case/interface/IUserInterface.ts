@@ -7,6 +7,7 @@ interface IUserInterface {
     followProfessional(profId: string, userId: string): Promise<Boolean>
     unfollowProf(profId: string, userId: string): Promise<Boolean>
     savePost(postId: string, userId: string, save: string): Promise<Boolean>
+    changePassword(email: string, password: string): Promise<boolean>
 }
 
 export default IUserInterface;

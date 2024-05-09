@@ -1,5 +1,5 @@
 import IRequirement from "../../domain/requirement";
-import IRequirementRepository from "../../use_case/interface/IReuirementRepository";
+import IRequirementRepository from "../../use_case/interface/IRequirementRepository";
 import RequirementModel from "../database/requirementModel";
 import notificationModel from "../database/notificationModel";
 import ProfModel from "../database/profModel";
@@ -17,8 +17,7 @@ class RequirementRepository implements IRequirementRepository {
             } else if (requirement.service === 'House plan') {
                 job = 'Architect'
             }
-            const professionals = await ProfModel.find({ job: job });
-            console.log(professionals);
+            const professionals = await ProfModel.find({ job: job, isVerified: true });
             const notifications = professionals.map(prof => {
                 return new notificationModel({
                     userId: prof._id,
@@ -29,8 +28,8 @@ class RequirementRepository implements IRequirementRepository {
             })
 
             await notificationModel.insertMany(notifications);
-            console.log(newReq);
             await newReq.save();
+            // await ProfModel.updateMany({ job: job, isVerified: true }, { $addToSet: { requirements: newReq._id } });
             return newReq
         } catch (err) {
             throw new Error('Failed to save requirement')
@@ -60,7 +59,7 @@ class RequirementRepository implements IRequirementRepository {
             const prof = await ProfModel.findOne({ _id: profId });
             let service;
             if (prof?.job == 'Architect') {
-                service = 'House Plan'
+                service = 'House plan'
             } else if (prof?.job == 'Interior Designer') {
                 service = 'Interior design'
             } else if (prof?.job == 'Constructor') {

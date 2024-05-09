@@ -52,6 +52,17 @@ class UserController {
         }
 
     }
+
+    async resendOtp(req: Request, res: Response) {
+        try {
+            let token = req.headers.authorization?.split(' ')[1] as string;
+            let newToken = await this.Userusecase.resendOtp(token);
+            res.status(200).json({ success: true, newToken });
+        } catch (err) {
+            res.status(500).json({ success: false, message: 'Internal server error!' });
+        }
+    }
+
     async login(req: Request, res: Response) {
         try {
             const { email, password } = req.body;
@@ -198,6 +209,52 @@ class UserController {
             }
         } catch (err) {
             res.status(500).json({ success: false, message: err });
+        }
+    }
+
+    async forgotPassword(req: Request, res: Response) {
+        try {
+            console.log('in Forgot password controller')
+            let email = req.body.email;
+            const data = await this.Userusecase.forgotPassword(email);
+            if (!data.data) {
+                res.status(402).json({ success: false, message: 'Email not found!' });
+            } else {
+                res.status(200).json({ success: true, token: data.token });
+            }
+        } catch (err) {
+            res.status(500).json({ success: false, message: 'Internal server error!' });
+        }
+    }
+
+    async verifyOtpForgotPassword(req: Request, res: Response) {
+        try {
+            let token = req.headers.authorization?.split(' ')[1] as string;
+            console.log(token)
+            let otp = req.body.otp;
+            const result = await this.Userusecase.verifyOtpForgotPassword(token, otp);
+            if (result) {
+                res.status(200).json({ success: true });
+            } else {
+                res.status(402).json({ success: false, message: 'Incorrect OTP!' });
+            }
+        } catch (err) {
+            res.status(500).json({ success: false, message: 'Internal server error!' });
+        }
+    }
+
+    async changePassword(req: Request, res: Response) {
+        try {
+            let token = req.headers.authorization?.split(' ')[1] as string;
+            let password = req.body.password;
+            const result = await this.Userusecase.changePassword(token, password);
+            if (result) {
+                res.status(200).json({ success: true });
+            } else {
+                res.status(402).json({ success: false, message: 'Failed to change the password!' })
+            }
+        } catch (err) {
+            res.status(500).json({ success: false, message: 'Internal server error!' });
         }
     }
 

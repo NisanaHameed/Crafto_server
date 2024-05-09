@@ -53,13 +53,13 @@ function socketServer(server: any) {
             io.emit('getUsers', users)
         })
 
-        socket.on('sendMessage', ({ senderId, receiverId, text }) => {
+        socket.on('sendMessage', ({ senderId, receiverId, text, createdAt }) => {
             console.log(users)
             console.log(senderId, receiverId, text)
             const user = getUser(receiverId);
             console.log('user', user)
             if (user) {
-                io.to(user.socketId).emit('getMessage', { senderId, text })
+                io.to(user.socketId).emit('getMessage', { senderId, text, createdAt })
             }
         })
 
@@ -68,8 +68,8 @@ function socketServer(server: any) {
             io.emit('userOnline', users.filter(user => user.online));
         })
 
-        socket.on('pushNotification', async({ requirement, message }) => {
-            console.log('first one',requirement,message);
+        socket.on('pushNotification', async ({ requirement, message }) => {
+            console.log('first one', requirement, message);
             let job;
             if (requirement.service === 'Home construction') {
                 job = 'Constructor';
@@ -78,17 +78,17 @@ function socketServer(server: any) {
             } else if (requirement.service === 'House plan') {
                 job = 'Architect'
             }
-            const professionals:any = await ProfModel.find({ job: job });
-            console.log('professionals',professionals)
-            professionals.forEach((prof:any )=> {
-                console.log('prof',prof)
-                console.log('profId',prof._id)
+            const professionals: any = await ProfModel.find({ job: job, isVerified: true });
+            console.log('professionals', professionals)
+            professionals.forEach((prof: any) => {
+                console.log('prof', prof)
+                console.log('profId', prof._id)
                 const user = getUser(prof._id.toString());
-                console.log('user',user)
+                console.log('user', user)
                 if (user && user.socketId) {
                     io.to(user.socketId).emit('getNotification', { user, message });
                 }
-            });          
+            });
         })
     })
 }

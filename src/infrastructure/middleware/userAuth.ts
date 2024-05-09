@@ -39,7 +39,10 @@ const userAuth = async (req:Request,res:Response,next:NextFunction)=>{
             return res.status(401).json({success:false,message:"Unauthorized - Invalid token"})
         }
     
-    }catch(err){
+    }catch(err:any){
+        if(err.name==='TokenExpiredError'){
+            return res.status(401).json({ success: false, message: "Session has expired, please log in again." });
+        }
         return res.status(401).send({success:false,message:"Unauthorized - Invalid token"})
     }
 }

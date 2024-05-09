@@ -107,11 +107,10 @@ class ProfRepository implements profInterface {
         }
     }
 
-    async updateIsVerified(profId: string): Promise<boolean> {
+    async updateIsVerified(profId: string, isVerified: boolean): Promise<boolean> {
         try {
 
-            const prof = await ProfModel.findOneAndUpdate({ _id: profId }, { $set: { isVerified: false }, $unset: { subscriptionID: 1 } }, { new: true });
-            console.log(prof)
+            const prof = await ProfModel.findOneAndUpdate({ _id: profId }, { $set: { isVerified: isVerified }, $unset: { subscriptionID: 1 } }, { new: true });
             return (prof ? true : false);
         } catch (err) {
             throw new Error('Failed to update isVerified');
@@ -122,7 +121,6 @@ class ProfRepository implements profInterface {
         try {
             const newSubscription = new subscriptionModel(data);
             await newSubscription.save();
-            console.log('newSubscription',newSubscription)
             return (newSubscription ? true : false);
         } catch (err) {
             throw new Error('Failed to create subscription');
@@ -140,6 +138,17 @@ class ProfRepository implements profInterface {
             return updated.acknowledged;
         } catch (err) {
             throw new Error('Failed to update subscription');
+        }
+    }
+
+    async changePassword(email: string, password: string): Promise<boolean> {
+        try {
+            let result = await ProfModel.updateOne({ email: email }, { $set: { password: password } });
+            console.log(result)
+            return result.acknowledged;
+        } catch (err) {
+            console.log(err);
+            throw new Error('failed to update password!');
         }
     }
 }

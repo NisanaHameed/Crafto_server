@@ -9,6 +9,8 @@ import CategoryModel from "../database/categoryModel";
 import Jobrole from "../../domain/jobRole";
 import JobroleModel from "../database/jobroleModel";
 import Category from "../../domain/category";
+import Subscription from "../../domain/subscription";
+import subscriptionModel from "../database/subscriptionModel";
 
 class AdminRepository implements AdminInterface {
     async findAdminByEmail(email: string): Promise<Admin | null> {
@@ -118,19 +120,51 @@ class AdminRepository implements AdminInterface {
         try {
             const res = await JobroleModel.deleteOne({ _id: id });
             console.log(res)
-            return res.deletedCount==1;
+            return res.deletedCount == 1;
         } catch (err) {
             throw new Error('Failed to delete jobrole!')
         }
     }
 
-    async editJobrole(id: string,name:string): Promise<Boolean> {
-        try{
-            const res = await JobroleModel.updateOne({_id:id},{$set:{name:name}});
+    async editJobrole(id: string, name: string): Promise<Boolean> {
+        try {
+            const res = await JobroleModel.updateOne({ _id: id }, { $set: { name: name } });
             console.log(res);
-            return (res? true:false);
-        }catch(err){
+            return (res ? true : false);
+        } catch (err) {
             throw new Error('Failed to edit jobrole!');
+        }
+    }
+
+    async getSubscriptions(): Promise<Subscription | null> {
+        try {
+            const data: any = await subscriptionModel.find().populate('profId');
+            return data;
+        } catch (err) {
+            throw new Error('Failed to fetch subscriptions');
+        }
+    }
+
+    async getASubscription(id: string): Promise<Subscription | null> {
+        try {
+            const data = await subscriptionModel.findOne({ profId: id }).populate('profId');
+            return data;
+        } catch (err) {
+            throw new Error('Failed to fetch subscription');
+        }
+    }
+
+    async getDashboardDetails(): Promise<Object> {
+        try {
+            const unblockedUsers = await UserModel.countDocuments({ isBlocked: false });
+            const blockedUsers = await UserModel.countDocuments({ isBlocked: true });
+            const unblockedProfs = await ProfModel.countDocuments({ isBlocked: false });
+            const blockedProfs = await ProfModel.countDocuments({ isBlocked: true });
+            const activeSubscriptions = await subscriptionModel.countDocuments({ status: 'Active' });
+            const cancelledSubscriptions = await subscriptionModel.countDocuments({ status: 'Cancelled' });
+            return {unblockedUsers,blockedUsers,unblockedProfs,blockedProfs,activeSubscriptions,cancelledSubscriptions}
+        } catch (err) {
+            throw new Error('Failed to fetch data!');
         }
     }
 

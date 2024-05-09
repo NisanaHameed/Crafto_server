@@ -38,10 +38,14 @@ const profAuth = async (req: Request, res: Response, next: NextFunction) => {
                 next();
             }
         } else {
+            
             return res.status(401).json({ success: false, message: "Unauthorized" })
         }
 
-    } catch (err) {
+    } catch (err:any) {
+        if(err.name==='TokenExpiredError'){
+            return res.status(401).json({ success: false, message: "Session has expired, please log in again." });
+        }
         return res.status(401).json({ success: false, message: "Unauthorized" })
     }
 }

@@ -1,9 +1,9 @@
 import Stripe from "stripe";
-const stripe = new Stripe(process.env.stripe_key as string);
+const stripe = new Stripe(process.env.STRIPE_KEY as string);
 
 class StripePayment {
 
-    async makePayment(email: string, plan: string,userId:string) {
+    async makePayment(email: string, plan: string, userId: string) {
         console.log('profemail', email)
         let subscriptionPlanId;
         if (plan === 'monthly') {
@@ -36,14 +36,25 @@ class StripePayment {
 
     }
 
-    async cancelSubscription(sessionId: string) {
+    async cancelSubscription(subscriptionID: string) {
         try {
-            console.log(sessionId)
-            const deletedSubscription = await stripe.subscriptions.cancel(sessionId);
+            console.log(subscriptionID)
+            const deletedSubscription = await stripe.subscriptions.cancel(subscriptionID);
             return deletedSubscription;
         } catch (err) {
             console.log('Subscription cancellation failed');
             throw err;
+        }
+    }
+
+    async fetchSubscriptions() {
+        try {
+            const subscriptions = await stripe.subscriptions.list({
+                limit: 100,
+            })
+            return subscriptions;
+        } catch (err) {
+            console.log('failed to fetch subscriptions');
         }
     }
 }

@@ -4,7 +4,7 @@ import GenerateOTP from "../infrastructure/utils/otpGenerator";
 import SendMail from "../infrastructure/utils/sendMail";
 import HashPassword from "../infrastructure/utils/hashPassword";
 import JWT from "../infrastructure/utils/jwt";
-import jwt from 'jsonwebtoken';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 import Cloudinary from "../infrastructure/utils/cloudinary";
 import StripePayment from "../infrastructure/utils/stripe";
 import Subscription from "../domain/subscription";
@@ -35,7 +35,7 @@ class ProfUsecase {
             } else {
                 const otp = this.generateOtp.generateOtp();
                 console.log(otp);
-                let token = jwt.sign({ profData, otp }, process.env.auth_secret as string, { expiresIn: '5m' });
+                let token = jwt.sign({ profData, otp }, process.env.AUTH_SECRET as string, { expiresIn: '10m' });
                 await this.sendMail.sendMail(profData.email, otp);
                 return {
                     data: false,
@@ -64,6 +64,20 @@ class ProfUsecase {
             throw err;
         }
     }
+
+    async resendOtp(token: string) {
+        try {
+            let decoded = this.jwt.verifyToken(token) as JwtPayload;
+            let newOtp = this.generateOtp.generateOtp();
+            console.log(newOtp);
+            let profData = decoded.profData
+            let newToken = jwt.sign({ profData, otp:newOtp }, process.env.AUTH_SECRET as string, { expiresIn: '10m' })
+            return newToken;
+        } catch (err) {
+            throw err;
+        }
+    }
+
     async fillProfile(profdata: Professional, token: string) {
         try {
             let decoded = this.jwt.verifyToken(token);
@@ -122,7 +136,7 @@ class ProfUsecase {
                 return { success: false, message: "Email already exists" }
             } else {
                 const profData = { email, password }
-                const token = jwt.sign({ profData }, process.env.auth_secret as string, { expiresIn: '15m' });
+                const token = jwt.sign({ profData }, process.env.AUTH_SECRET as string, { expiresIn: '15m' });
                 return { success: true, token }
             }
         } catch (err) {
@@ -167,7 +181,7 @@ class ProfUsecase {
             } else {
                 const otp = this.generateOtp.generateOtp();
                 console.log(otp);
-                let token = jwt.sign({ email, otp }, process.env.auth_secret as string, { expiresIn: '5m' });
+                let token = jwt.sign({ email, otp }, process.env.AUTH_SECRET as string, { expiresIn: '5m' });
                 await this.sendMail.sendMail(email, otp);
                 return {
                     data: false,
@@ -215,6 +229,50 @@ class ProfUsecase {
             } else {
                 return { success: false, message: 'Current password is incorrect!' }
             }
+        } catch (err) {
+            throw err;
+        }
+    }
+
+    async forgotPassword(email: string) {
+        try {
+            const findEmail = await this.profRepository.findByEmail(email);
+            if (!findEmail) {
+                return { data: false }
+            } else {
+                const otp = this.generateOtp.generateOtp();
+                console.log(otp);
+                let token = jwt.sign({ email, otp }, process.env.AUTH_SECRET as string, { expiresIn: '5m' });
+                console.log('Created token ',token)
+                await this.sendMail.sendMail(email, otp);
+                return { data: true, token };
+            }
+        } catch (err) {
+            throw err;
+        }
+    }
+
+    async verifyOtpForgotPassword(token: string, otp: string) {
+        try {
+            console.log('In verifyOtpForgotPassword usecase');
+            console.log('token...',token)
+            let decoded = await jwt.verify(token,process.env.AUTH_SECRET as string) as JwtPayload;
+            if (decoded.otp !== otp) {
+                return false
+            } else {
+                return true;
+            }
+        } catch (err) {
+            throw err;
+        }
+    }
+
+    async changePassword(token: string, password: string) {
+        try {
+            let decoded = await this.jwt.verifyToken(token) as JwtPayload;
+            let hasedPassword = await this.hash.hashPassword(password);
+            const result = await this.profRepository.changePassword(decoded.email, hasedPassword);
+            return result;
         } catch (err) {
             throw err;
         }
@@ -275,7 +333,16 @@ class ProfUsecase {
             const updateSubscription = await this.profRepository.updateSubscription(profId, '');
             const prof: any = await this.profRepository.findProfById(profId);
             await this.stripe.cancelSubscription(prof?.subscriptionID);
-            const updated = await this.profRepository.updateIsVerified(profId);
+            const updated = await this.profRepository.updateIsVerified(profId, false);
+            return updated;
+        } catch (err) {
+            throw err;
+        }
+    }
+
+    async handlePaymentFailure(id: string) {
+        try {
+            const updated = await this.profRepository.updateIsVerified(id, false);
             return updated;
         } catch (err) {
             throw err;

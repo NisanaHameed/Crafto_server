@@ -7,7 +7,7 @@ interface Post {
     caption: string
     image: string
     isPortrait: Boolean
-    likes: Array<string>
+    likes: Array<ObjectId>
     comments: Array<comment>
     saved: Array<string>
 }

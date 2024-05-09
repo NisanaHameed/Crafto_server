@@ -47,6 +47,10 @@ router.patch('/editProfile', authenticate, uploadFile.single('image'), (req, res
 router.post('/follow', authenticate, (req, res) => controller.followProfessional(req, res));
 router.post('/unfollow', authenticate, (req, res) => controller.unfollowProfessional(req, res));
 router.patch('/savePost/:id/:save', authenticate, (req, res) => controller.savePost(req, res));
+router.post('/forgotPassword', (req, res) => controller.forgotPassword(req, res));
+router.post('/verifyOtpForgotPassword', (req, res) => controller.verifyOtpForgotPassword(req, res));
+router.post('/changePassword', (req, res) => controller.changePassword(req, res));
+router.post('/resendOtp', (req, res) => controller.resendOtp(req, res));
 router.get('/logout', (req, res) => controller.logout(req, res));
 
 router.get('/designs/:category', (req, res) => postController.getDesigns(req, res));
@@ -56,6 +60,8 @@ router.put('/like/:id', authenticate, (req, res) => postController.likeByUSer(re
 router.put('/unlike/:id', authenticate, (req, res) => postController.unlikeByUser(req, res));
 router.get('/postDetails/:id', (req, res) => postController.getAPostById(req, res));
 router.put('/postComment', authenticate, (req, res) => postController.addCommentbyUser(req, res));
+
+router.get('/searchDesign', (req, res) => postController.searchDesigns(req, res));
 
 router.post('/postRequirement', authenticate, (req, res) => reqController.saveRequirement(req, res));
 router.get('/requirements', authenticate, (req, res) => reqController.getRequirements(req, res));

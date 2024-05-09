@@ -39,9 +39,9 @@ class PostUsecase {
             throw err;
         }
     }
-    async getAllPosts() {
+    async getAllPosts(page: number, limit: number) {
         try {
-            let res = await this.repository.getAllPosts();
+            let res = await this.repository.getAllPosts(page, limit);
             return res;
         } catch (err) {
             throw err;
@@ -55,9 +55,9 @@ class PostUsecase {
             throw err;
         }
     }
-    async likePost(id: string, userId: string) {
+    async likePost(id: string, userId: string, role: string) {
         try {
-            const updated = await this.repository.likePost(id, userId);
+            const updated = await this.repository.likePost(id, userId, role);
             return updated;
         } catch (err) {
             throw err;
@@ -85,6 +85,15 @@ class PostUsecase {
         try {
             const result = await this.repository.addComment(userId, postId, comment, type);
             return result;
+        } catch (err) {
+            throw err;
+        }
+    }
+
+    async searchDesigns(searchTerm: string, category: string, sort: number, page: number, limit: number) {
+        try {
+            const data = await this.repository.searchDesigns(searchTerm, category, sort, page, limit);
+            return data;
         } catch (err) {
             throw err;
         }

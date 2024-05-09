@@ -61,6 +61,10 @@ router.get('/profDetails/:id', (req, res) => controller.getAProfessional(req, re
 router.patch('/savePost/:id/:save', authenticate, (req, res) => controller.savePost(req, res));
 router.post('/subscribe/:plan', authenticate, (req, res) => controller.subscribe(req, res));
 router.delete('/cancelSubscription', authenticate, (req, res) => controller.cancelSubscription(req, res));
+router.post('/forgotPassword', (req, res) => controller.forgotPassword(req, res));
+router.post('/verifyOtpForgotPassword', (req, res) => controller.verifyOtpForgotPassword(req, res));
+router.post('/changePassword', (req, res) => controller.changePassword(req, res));
+router.post('/resendOtp', (req, res) => controller.resendOtp(req, res));
 router.get('/logout', (req, res) => controller.logout(req, res));
 
 router.post('/createPost', authenticate, uploadFile.single('image'), (req, res) => postController.createPost(req, res));

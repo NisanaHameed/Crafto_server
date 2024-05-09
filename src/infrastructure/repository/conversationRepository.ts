@@ -26,7 +26,7 @@ class ConversationRepository implements IConversationRepository {
     async getConversations(id: string): Promise<Conversation | null> {
 
         try {
-            const conversations: any = await conversationModel.find({ members: { $in: [id] } });
+            const conversations: any = await conversationModel.find({ members: { $in: [id] } }).sort({ updatedAt: -1 });
             return conversations;
         } catch (err) {
             throw new Error('Failed to fetch conversations');

@@ -4,7 +4,7 @@ import SendOTP from '../infrastructure/utils/sendMail';
 import GenerateOTP from '../infrastructure/utils/otpGenerator';
 import HashPassword from '../infrastructure/utils/hashPassword';
 import JWT from '../infrastructure/utils/jwt';
-import jwt from 'jsonwebtoken'
+import jwt, { JwtPayload } from 'jsonwebtoken'
 import Cloudinary from '../infrastructure/utils/cloudinary';
 import ConversationRepository from '../infrastructure/repository/conversationRepository';
 
@@ -35,7 +35,7 @@ class Userusecase {
             } else {
                 const otp = this.GenerateOTP.generateOtp();
                 console.log(otp);
-                let token = jwt.sign({ userData, otp }, process.env.auth_secret as string, { expiresIn: '5m' });
+                let token = jwt.sign({ userData, otp }, process.env.AUTH_SECRET as string, { expiresIn: '5m' });
                 await this.sendOtp.sendMail(userData.email, otp)
                 return {
                     data: false,
@@ -50,6 +50,7 @@ class Userusecase {
     async saveUSer(token: string, userOtp: string) {
         try {
             let decoded = this.jwt.verifyToken(token)
+            console.log('decoded',decoded)
             if (decoded) {
                 if (userOtp == decoded.otp) {
                     let hashedP = await this.hash.hashPassword(decoded.userData.password)
@@ -73,6 +74,20 @@ class Userusecase {
             throw err;
         }
     }
+
+    async resendOtp(token: string) {
+        try {
+            let decoded = this.jwt.verifyToken(token) as JwtPayload;
+            let newOtp = this.GenerateOTP.generateOtp();
+            console.log(newOtp);
+            let userData = decoded.userData
+            let newToken = jwt.sign({ userData, otp:newOtp }, process.env.AUTH_SECRET as string, { expiresIn: '5m' })
+            return newToken;
+        } catch (err) {
+            throw err;
+        }
+    }
+
     async login(email: string, password: string) {
         try {
             let userdata: any = await this.userRepository.findByEmail(email);
@@ -178,5 +193,49 @@ class Userusecase {
             throw err;
         }
     }
+
+    async forgotPassword(email: string) {
+        try {
+            const findEmail = await this.userRepository.findByEmail(email);
+            if (!findEmail) {
+                return { data: false }
+            } else {
+                const otp = this.GenerateOTP.generateOtp();
+                console.log(otp);
+                let token = jwt.sign({ email, otp }, process.env.AUTH_SECRET as string, { expiresIn: '5m' });
+                await this.sendOtp.sendMail(email, otp);
+                return { data: true, token };
+            }
+        } catch (err) {
+            throw err;
+        }
+    }
+
+    async verifyOtpForgotPassword(token: string, otp: string) {
+        try {
+            console.log('In verifyOtpForgotPassword usecase');
+
+            let decoded = this.jwt.verifyToken(token) as JwtPayload;
+            if (decoded.otp !== otp) {
+                return false
+            } else {
+                return true;
+            }
+        } catch (err) {
+            throw err;
+        }
+    }
+
+    async changePassword(token: string, password: string) {
+        try {
+            let decoded = this.jwt.verifyToken(token) as JwtPayload;
+            let hasedPassword = await this.hash.hashPassword(password);
+            const result = await this.userRepository.changePassword(decoded.email, hasedPassword);
+            return result;
+        } catch (err) {
+            throw err;
+        }
+    }
+
 }
 export default Userusecase;
