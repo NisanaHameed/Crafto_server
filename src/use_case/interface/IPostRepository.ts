@@ -10,11 +10,12 @@ interface IPostRepository {
     getDesigns(category: string): Promise<Post | null>
     getAllPosts(page: number, limit: number): Promise<ISearch | null>
     getPortraits(id: string): Promise<Post | null>
-    likePost(id: string, userId: string, role: string): Promise<Boolean>
-    unlikePost(id: string, userId: string): Promise<Boolean>
+    likePost(id: string, userId: string, role: string): Promise<Post | null>
+    unlikePost(id: string, userId: string): Promise<Post | null>
     getAPostById(id: string): Promise<Post | null>
     addComment(userId: string, postId: string, comment: string, type: string): Promise<Boolean>
     searchDesigns(searchTerm: string, category: string, sort: number, page: number, limit: number): Promise<ISearch | null>
+    deletePost(id: string): Promise<boolean>
 }
 
 export default IPostRepository;

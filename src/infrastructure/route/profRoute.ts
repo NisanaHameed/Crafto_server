@@ -76,6 +76,7 @@ router.get('/postsById/:id', (req, res) => postController.getPostsById(req, res)
 router.put('/like/:id', authenticate, (req, res) => postController.likeByProf(req, res));
 router.put('/unlike/:id', authenticate, (req, res) => postController.unlikeByProf(req, res))
 router.put('/postComment', authenticate, (req, res) => postController.addCommentbyProf(req, res));
+router.delete('/deletePost/:id', authenticate, (req, res) => postController.deletePost(req, res));
 
 router.get('/notifications', authenticate, (req, res) => notificationController.getNotifications(req, res));
 router.patch('/updateNotification/:id', authenticate, (req, res) => notificationController.updateNotification(req, res));

@@ -64,20 +64,22 @@ class PostRepository implements IPostRepository {
             throw new Error('Failed to fetch portrait!');
         }
     }
-    async likePost(id: string, userID: string, role: string): Promise<Boolean> {
+    async likePost(id: string, userID: string, role: string): Promise<Post | null> {
         try {
-            const updated = await postModel.updateOne({ _id: id, 'likes.user': { $ne: userID } }, { $push: { likes: { user: userID, type: role } } });
-            return updated.acknowledged;
+            const updated: any = await postModel.findOneAndUpdate({ _id: id, 'likes.user': { $ne: userID } }, { $push: { likes: { user: userID, type: role } } }, { new: true });
+            console.log(updated)
+            return updated;
         } catch (err) {
             throw new Error('Failed to update the post');
         }
     }
 
-    async unlikePost(id: string, userId: string): Promise<Boolean> {
+    async unlikePost(id: string, userId: string): Promise<Post | null> {
         try {
             console.log(id, userId)
-            const updated = await postModel.updateOne({ _id: id }, { $pull: { likes: { user: userId } } });
-            return updated.acknowledged;
+            const updated: any = await postModel.findOneAndUpdate({ _id: id }, { $pull: { likes: { user: userId } } }, { new: true });
+            console.log(updated)
+            return updated;
         } catch (err) {
             throw new Error('Failed to update the post');
         }
@@ -136,6 +138,15 @@ class PostRepository implements IPostRepository {
             return { posts, total };
         } catch (err) {
             throw new Error('Failed to fetch data');
+        }
+    }
+
+    async deletePost(id: string): Promise<boolean> {
+        try {
+            let deleted = await postModel.deleteOne({ _id: id });
+            return deleted.acknowledged;
+        } catch (err) {
+            throw new Error('Failed to delete');
         }
     }
 

@@ -23,7 +23,7 @@ class RequirementController {
                 res.status(500).json({ success: false, message: 'Internal server error' })
             }
         } catch (err) {
-            res.status(500).json({ success: false, message: err });
+            res.status(500).json({ success: false, message: 'Internal server error' });
         }
     }
 

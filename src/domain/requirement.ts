@@ -11,6 +11,7 @@ interface IRequirement{
     scope?:string,
     plan?:string,
     status?:string,
-    createdAt:Date
+    createdAt:Date,
+    mobile:string
 }
 export default IRequirement;

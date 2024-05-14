@@ -10,9 +10,9 @@ class UserController {
 
     async signup(req: Request, res: Response) {
         try {
-            const { name, email, mobile, password } = req.body;
+            const { name, email, password } = req.body;
             console.log(name, '+', email)
-            const userData = { name, email, mobile, password }
+            const userData = { name, email, password }
             let userCheck = await this.Userusecase.findUser(userData as User);
             console.log(userCheck)
             if (!userCheck.data) {
@@ -38,8 +38,9 @@ class UserController {
             let saveduser = await this.Userusecase.saveUSer(token, userOtp)
             if (saveduser.success) {
                 res.cookie('userToken', saveduser.token, {
-                    expires: new Date(Date.now() + 25892000000),
-                    httpOnly: true
+                    maxAge: 30 * 24 * 60 * 60 * 1000,
+                    httpOnly: true,
+                    sameSite:'none'
                 })
                 res.status(200).json(saveduser)
             } else {

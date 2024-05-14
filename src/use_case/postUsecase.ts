@@ -98,5 +98,14 @@ class PostUsecase {
             throw err;
         }
     }
+
+    async deletePost(id: string) {
+        try {
+            let deleted = await this.repository.deletePost(id);
+            return deleted;
+        } catch (err) {
+            throw err;
+        }
+    }
 }
 export default PostUsecase;

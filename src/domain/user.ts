@@ -2,7 +2,7 @@ interface User {
     _id?: string,
     name: string,
     email: string,
-    mobile: number,
+    mobile: string,
     city:string,
     password: string,
     following:Array<string>,

@@ -62,8 +62,8 @@ class PostController {
         try {
             let page = req.query.page || 1;
             let limit = parseInt(req.query.limit as string);
-            let data = await this.usecase.getAllPosts(page as number,limit);
-            res.status(200).json({ success: true, posts:data?.posts });
+            let data = await this.usecase.getAllPosts(page as number, limit);
+            res.status(200).json({ success: true, posts: data?.posts, total: data?.total });
         } catch (err) {
             res.status(500).json({ success: false, message: err });
         }
@@ -106,9 +106,9 @@ class PostController {
             let postid = req.params.id;
             let userId = req.userId;
             if (userId) {
-                const updated = await this.usecase.likePost(postid, userId,'User')
+                const updated = await this.usecase.likePost(postid, userId, 'User')
                 if (updated) {
-                    res.status(200).json({ success: true });
+                    res.status(200).json({ success: true, post: updated });
                 } else {
                     res.status(500).json({ success: false, message: 'Failed to update' })
                 }
@@ -127,7 +127,7 @@ class PostController {
             if (userId) {
                 const updated = await this.usecase.unlikePost(postid, userId)
                 if (updated) {
-                    res.status(200).json({ success: true });
+                    res.status(200).json({ success: true, post: updated });
                 } else {
                     res.status(500).json({ success: false, message: 'Failed to update' })
                 }
@@ -144,9 +144,9 @@ class PostController {
             let userId = req.profId;
 
             if (userId) {
-                const updated = await this.usecase.likePost(postid, userId,'Professional')
+                const updated = await this.usecase.likePost(postid, userId, 'Professional')
                 if (updated) {
-                    res.status(200).json({ success: true });
+                    res.status(200).json({ success: true, post: updated });
                 } else {
                     res.status(500).json({ success: false, message: 'Failed to update' })
                 }
@@ -165,7 +165,7 @@ class PostController {
             if (userId) {
                 const updated = await this.usecase.unlikePost(postid, userId)
                 if (updated) {
-                    res.status(200).json({ success: true });
+                    res.status(200).json({ success: true, post: updated });
                 } else {
                     res.status(500).json({ success: false, message: 'Failed to update' })
                 }
@@ -222,9 +222,23 @@ class PostController {
     async searchDesigns(req: Request, res: Response) {
         try {
             let { searchTerm, category, sort, page, limit } = req.query;
-            console.log('sort',sort)
+            console.log('sort', sort)
             const data = await this.usecase.searchDesigns(searchTerm as string, category as string, parseInt(sort as string), parseInt(page as string), parseInt(limit as string));
             res.status(200).json({ success: true, data });
+        } catch (err) {
+            res.status(500).json({ success: false, message: 'Internal server error!' });
+        }
+    }
+
+    async deletePost(req: Request, res: Response) {
+        try {
+            const id = req.params.id;
+            let deleted = await this.usecase.deletePost(id);
+            if (deleted) {
+                res.status(200).json({ success: true, message: 'Post deleted!' });
+            } else {
+                res.status(500).json({ success: false, message: 'Failed to delete post!' });
+            }
         } catch (err) {
             res.status(500).json({ success: false, message: 'Internal server error!' });
         }

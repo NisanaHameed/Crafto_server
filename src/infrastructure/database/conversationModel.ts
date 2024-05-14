@@ -18,13 +18,6 @@ const conversationSchema = new mongoose.Schema({
             // }
         }
     ],
-    // messages: [
-    //     {
-    //         type: Schema.Types.ObjectId,
-    //         ref: 'Message',
-    //         default: []
-    //     }
-    // ]
 }, { timestamps: true })
 
 const conversationModel = mongoose.model('Conversation', conversationSchema);
