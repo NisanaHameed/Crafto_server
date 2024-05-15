@@ -14,7 +14,9 @@ class AdminController {
             if (data.success) {
                 res.cookie('adminToken', data.token, {
                     expires: new Date(Date.now() + 25892000000),
-                    httpOnly: true
+                    httpOnly: true,
+                    sameSite:'none',
+                    secure:true
                 })
                 res.status(200).json(data)
             } else {
