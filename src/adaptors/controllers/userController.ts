@@ -38,9 +38,10 @@ class UserController {
             let saveduser = await this.Userusecase.saveUSer(token, userOtp)
             if (saveduser.success) {
                 res.cookie('userToken', saveduser.token, {
-                    maxAge: 30 * 24 * 60 * 60 * 1000,
+                    expires: new Date(Date.now() + 25892000000),
                     httpOnly: true,
-                    sameSite:'none'
+                    sameSite:'none',
+                    secure:true
                 })
                 res.status(200).json(saveduser)
             } else {
@@ -72,7 +73,9 @@ class UserController {
             if (userCheck.success) {
                 res.cookie('userToken', userCheck.token, {
                     expires: new Date(Date.now() + 25892000000),
-                    httpOnly: true
+                    httpOnly: true,
+                    sameSite:'none',
+                    secure:true
                 })
                 res.status(200).json({ success: true, token: userCheck.token })
             } else {

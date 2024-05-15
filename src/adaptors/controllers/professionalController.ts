@@ -60,9 +60,10 @@ class ProfController {
             let saved = await this.usecase.fillProfile(data, token);
             if (saved.success) {
                 res.cookie('profToken', saved.token, {
-                    maxAge: 30 * 24 * 60 * 60 * 1000,
+                    expires: new Date(Date.now() + 25892000000),
                     httpOnly: true,
-                    sameSite:'none'
+                    sameSite: 'none',
+                    secure:true
                 })
                 res.status(200).json({ success: true, token: saved.token })
             } else {
@@ -96,9 +97,10 @@ class ProfController {
             let profCheck = await this.usecase.login(email, password);
             if (profCheck.success) {
                 res.cookie('profToken', profCheck.token, {
-                    maxAge: 30 * 24 * 60 * 60 * 1000,
+                    expires: new Date(Date.now() + 25892000000),
                     httpOnly: true,
-                    sameSite:'none'
+                    sameSite: 'none',
+                    secure:true
                 })
                 res.status(200).json({ success: true, token: profCheck.token })
             } else {

@@ -18,6 +18,7 @@ const profAuth = async (req: Request, res: Response, next: NextFunction) => {
     console.log('In ProfAuth')
 
     let token = req.cookies.profToken;
+    console.log('Token...',token)
 
     if (!token) {
         return res.status(401).json({ success: false, message: "Please Login!" })
