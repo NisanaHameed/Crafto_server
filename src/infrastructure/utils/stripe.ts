@@ -22,8 +22,8 @@ class StripePayment {
                 }],
                 mode: 'subscription',
                 customer_email: email,
-                success_url: "http://localhost:5173/professional/successPayment",
-                cancel_url: 'http://localhost:5173/professional/cancelPayment',
+                success_url: "https://crafto-one.vercel.app/professional/successPayment/:asdfvbn",
+                cancel_url: 'https://crafto-one.vercel.app/professional/cancelPayment/:asdfvbn',
                 metadata: { userId: userId },
                 billing_address_collection: 'required'
             })
