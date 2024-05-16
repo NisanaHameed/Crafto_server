@@ -4,6 +4,8 @@ import JWT from "../infrastructure/utils/jwt";
 import HashPassword from "../infrastructure/utils/hashPassword";
 import Cloudinary from "../infrastructure/utils/cloudinary";
 import StripePayment from "../infrastructure/utils/stripe";
+import { unlink } from 'fs';
+import { join } from 'path';
 
 class AdminUsecase {
 
@@ -102,12 +104,25 @@ class AdminUsecase {
     async addCategory(name: string, image: any) {
         try {
             let upload = await this.cloudinary.uploadToCloud(image);
+            this.deleteImageFile(image.filename);
             let saveData = await this.repository.saveCategory(name, upload);
             return saveData;
         } catch (err) {
             throw err
         }
     }
+
+    async deleteImageFile(filename: any) {
+        const imagePath = join(__dirname, '../infrastructure/public/images', filename);
+        unlink(imagePath, (err: any) => {
+            if (err) {
+                console.log("Error deleting image.." + err);
+            } else {
+                console.log('image deleted');
+            }
+        })
+    }
+
     async addJobrole(name: string) {
         try {
             let saveData = await this.repository.saveJobrole(name);

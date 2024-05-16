@@ -7,6 +7,8 @@ import JWT from '../infrastructure/utils/jwt';
 import jwt, { JwtPayload } from 'jsonwebtoken'
 import Cloudinary from '../infrastructure/utils/cloudinary';
 import ConversationRepository from '../infrastructure/repository/conversationRepository';
+import { unlink } from 'fs';
+import { join } from 'path';
 
 class Userusecase {
 
@@ -50,7 +52,7 @@ class Userusecase {
     async saveUSer(token: string, userOtp: string) {
         try {
             let decoded = this.jwt.verifyToken(token)
-            console.log('decoded',decoded)
+            console.log('decoded', decoded)
             if (decoded) {
                 if (userOtp == decoded.otp) {
                     let hashedP = await this.hash.hashPassword(decoded.userData.password)
@@ -81,7 +83,7 @@ class Userusecase {
             let newOtp = this.GenerateOTP.generateOtp();
             console.log(newOtp);
             let userData = decoded.userData
-            let newToken = jwt.sign({ userData, otp:newOtp }, process.env.AUTH_SECRET as string, { expiresIn: '5m' })
+            let newToken = jwt.sign({ userData, otp: newOtp }, process.env.AUTH_SECRET as string, { expiresIn: '5m' })
             return newToken;
         } catch (err) {
             throw err;
@@ -143,19 +145,31 @@ class Userusecase {
             throw err;
         }
     }
-    async updateProfile(id: string, editedData: User) {
+    async updateProfile(id: string, editedData: User, filename: string) {
         try {
             let checkEmail = await this.userRepository.findUserById(id);
             if (checkEmail?.email !== editedData.email) {
             }
             let uploadFile = await this.cloudinary.uploadToCloud(editedData.image);
             editedData.image = uploadFile;
+            this.deleteImageFile(filename);
             let res = await this.userRepository.updateUser(id, editedData);
             return res;
         } catch (err) {
             console.log(err);
             throw err;
         }
+    }
+
+    async deleteImageFile(filename: any) {
+        const imagePath = join(__dirname, '../infrastructure/public/images', filename);
+        unlink(imagePath, (err: any) => {
+            if (err) {
+                console.log("Error deleting image.." + err);
+            } else {
+                console.log('image deleted');
+            }
+        })
     }
 
     async getConversations(id: string) {

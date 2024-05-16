@@ -1,6 +1,8 @@
 import Post from "../domain/post";
 import Cloudinary from "../infrastructure/utils/cloudinary";
 import PostRepository from "./interface/IPostRepository";
+import { unlink } from 'fs';
+import { join } from 'path';
 
 class PostUsecase {
     private cloudinary: Cloudinary
@@ -11,15 +13,27 @@ class PostUsecase {
         this.repository = repository;
     }
 
-    async createPost(post: Post) {
+    async createPost(post: Post,filename:string) {
         try {
             let uploadImage = await this.cloudinary.uploadToCloud(post.image);
             post.image = uploadImage;
+            this.deleteImageFile(filename);
             let res = await this.repository.savePost(post);
             return res;
         } catch (err) {
             throw err;
         }
+    }
+    
+    async deleteImageFile(filename: any) {
+        const imagePath = join(__dirname, '../infrastructure/public/images', filename);
+        unlink(imagePath, (err: any) => {
+            if (err) {
+                console.log("Error deleting image.." + err);
+            } else {
+                console.log('image deleted');
+            }
+        })
     }
 
     async getPost(profId: string) {

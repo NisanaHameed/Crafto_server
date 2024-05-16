@@ -8,6 +8,8 @@ import jwt, { JwtPayload } from 'jsonwebtoken';
 import Cloudinary from "../infrastructure/utils/cloudinary";
 import StripePayment from "../infrastructure/utils/stripe";
 import Subscription from "../domain/subscription";
+import { unlink } from 'fs';
+import { join } from 'path';
 
 class ProfUsecase {
     private profRepository: profRepository;
@@ -71,23 +73,24 @@ class ProfUsecase {
             let newOtp = this.generateOtp.generateOtp();
             console.log(newOtp);
             let profData = decoded.profData
-            let newToken = jwt.sign({ profData, otp:newOtp }, process.env.AUTH_SECRET as string, { expiresIn: '10m' })
+            let newToken = jwt.sign({ profData, otp: newOtp }, process.env.AUTH_SECRET as string, { expiresIn: '10m' })
             return newToken;
         } catch (err) {
             throw err;
         }
     }
 
-    async fillProfile(profdata: Professional, token: string) {
+    async fillProfile(profdata: Professional, token: string, filename: string) {
         try {
             let decoded = this.jwt.verifyToken(token);
             if (decoded) {
                 let hashedP = await this.hash.hashPassword(decoded.profData.password);
                 profdata.email = decoded.profData.email;
                 profdata.password = hashedP;
-
+                console.log(profdata.image);
                 let uploadFile = await this.cloudinary.uploadToCloud(profdata.image);
                 console.log('uploaded file' + uploadFile)
+                this.deleteImageFile(filename);
                 profdata.image = uploadFile
                 let newProf: any = await this.profRepository.saveProfessional(profdata);
                 if (newProf) {
@@ -106,6 +109,18 @@ class ProfUsecase {
             throw err;
         }
     }
+
+    async deleteImageFile(filename: any) {
+        const imagePath = join(__dirname, '../infrastructure/public/images', filename);
+        unlink(imagePath, (err: any) => {
+            if (err) {
+                console.log("Error deleting image.." + err);
+            } else {
+                console.log('image deleted');
+            }
+        })
+    }
+    
     async login(email: string, password: string) {
         try {
             let profdata: any = await this.profRepository.findByEmail(email);
@@ -243,7 +258,7 @@ class ProfUsecase {
                 const otp = this.generateOtp.generateOtp();
                 console.log(otp);
                 let token = jwt.sign({ email, otp }, process.env.AUTH_SECRET as string, { expiresIn: '5m' });
-                console.log('Created token ',token)
+                console.log('Created token ', token)
                 await this.sendMail.sendMail(email, otp);
                 return { data: true, token };
             }
@@ -255,8 +270,8 @@ class ProfUsecase {
     async verifyOtpForgotPassword(token: string, otp: string) {
         try {
             console.log('In verifyOtpForgotPassword usecase');
-            console.log('token...',token)
-            let decoded = await jwt.verify(token,process.env.AUTH_SECRET as string) as JwtPayload;
+            console.log('token...', token)
+            let decoded = await jwt.verify(token, process.env.AUTH_SECRET as string) as JwtPayload;
             if (decoded.otp !== otp) {
                 return false
             } else {

@@ -15,7 +15,8 @@ class PostController {
             let image = req.file;
             postData.image = image;
             postData.profId = profId
-            let result = await this.usecase.createPost(postData);
+            let filename = req.file?.filename;
+            let result = await this.usecase.createPost(postData,filename as string);
             if (result) {
                 res.status(200).json({ success: true });
             } else {

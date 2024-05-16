@@ -123,8 +123,9 @@ class UserController {
             const editedData = req.body
             let image = req.file;
             editedData.image = image;
+            let filename = req.file?.filename;
             if (userId) {
-                let updated = await this.Userusecase.updateProfile(userId, editedData);
+                let updated = await this.Userusecase.updateProfile(userId, editedData,filename as string);
                 if (updated) {
                     res.status(200).json({ success: true });
                 } else {

@@ -56,8 +56,10 @@ class ProfController {
             let token = req.headers.authorization?.split(' ')[1] as string;
             let data = req.body;
             let image = req.file;
+            let filename = req.file?.filename
+            console.log('image',image)
             data.image = image;
-            let saved = await this.usecase.fillProfile(data, token);
+            let saved = await this.usecase.fillProfile(data, token,filename as string);
             if (saved.success) {
                 res.cookie('profToken', saved.token, {
                     expires: new Date(Date.now() + 25892000000),
