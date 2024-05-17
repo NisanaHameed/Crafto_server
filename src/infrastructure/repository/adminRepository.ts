@@ -12,6 +12,15 @@ import Category from "../../domain/category";
 import Subscription from "../../domain/subscription";
 import subscriptionModel from "../database/subscriptionModel";
 
+interface Iprof {
+    professionals: Professional,
+    total: number
+}
+interface IUser {
+    users: User,
+    total: number
+}
+
 class AdminRepository implements AdminInterface {
     async findAdminByEmail(email: string): Promise<Admin | null> {
         try {
@@ -22,10 +31,14 @@ class AdminRepository implements AdminInterface {
             throw new Error("Failed to find admin by email")
         }
     }
-    async getUsers(): Promise<User | null> {
+    async getUsers(page: number, limit: number): Promise<IUser> {
         try {
-            let users: any = await UserModel.find();
-            return users;
+            let skipIndex = (page - 1) * limit;
+            let users: any = await UserModel.find()
+                .limit(limit)
+                .skip(skipIndex)
+            const total = await UserModel.countDocuments();
+            return { users, total };
         } catch (err) {
             console.log(err);
             throw new Error("Failed to fetch users")
@@ -49,10 +62,14 @@ class AdminRepository implements AdminInterface {
             throw new Error("Failed to block user")
         }
     }
-    async getProfessionals(): Promise<Professional> {
+    async getProfessionals(page: number, limit: number): Promise<Iprof> {
         try {
-            let professionals: any = await ProfModel.find();
-            return professionals;
+            let skipIndex = (page - 1) * limit;
+            let professionals: any = await ProfModel.find()
+                .limit(limit)
+                .skip(skipIndex)
+            const total = await ProfModel.countDocuments();
+            return { professionals, total };
         } catch (err) {
             console.log(err);
             throw new Error("Failed to fetch users")
@@ -85,6 +102,24 @@ class AdminRepository implements AdminInterface {
             throw new Error("Failed to save category")
         }
     }
+    async findCategory(name: string): Promise<Category | null> {
+        try {
+            let category = await CategoryModel.findOne({ name: { $regex: name, $options: 'i' } });
+            return category;
+        } catch (err) {
+            throw new Error('Failed to find category');
+        }
+    }
+
+    async editCategory(id: string, name: string, image: string): Promise<boolean> {
+        try {
+            let edited = await CategoryModel.updateOne({ _id: id }, { $set: { name: name } });
+            return edited.acknowledged;
+        } catch (err) {
+            throw new Error('Failed to edit category!');
+        }
+    }
+
     async saveJobrole(name: string): Promise<Boolean> {
         try {
             let newData = new JobroleModel({ name: name });
@@ -93,6 +128,15 @@ class AdminRepository implements AdminInterface {
         } catch (err) {
             console.log(err);
             throw new Error("Failed to save category")
+        }
+    }
+
+    async findJobrole(name: string): Promise<Jobrole | null> {
+        try {
+            let jobrole = await JobroleModel.findOne({ name: { $regex: name, $options: 'i' } });
+            return jobrole;
+        } catch (err) {
+            throw new Error('Failed to find job role');
         }
     }
 
@@ -162,7 +206,7 @@ class AdminRepository implements AdminInterface {
             const blockedProfs = await ProfModel.countDocuments({ isBlocked: true });
             const activeSubscriptions = await subscriptionModel.countDocuments({ status: 'Active' });
             const cancelledSubscriptions = await subscriptionModel.countDocuments({ status: 'Cancelled' });
-            return {unblockedUsers,blockedUsers,unblockedProfs,blockedProfs,activeSubscriptions,cancelledSubscriptions}
+            return { unblockedUsers, blockedUsers, unblockedProfs, blockedProfs, activeSubscriptions, cancelledSubscriptions }
         } catch (err) {
             throw new Error('Failed to fetch data!');
         }

@@ -15,8 +15,8 @@ class AdminController {
                 res.cookie('adminToken', data.token, {
                     expires: new Date(Date.now() + 25892000000),
                     httpOnly: true,
-                    sameSite:'none',
-                    secure:true
+                    sameSite: 'none',
+                    secure: true
                 })
                 res.status(200).json(data)
             } else {
@@ -39,10 +39,12 @@ class AdminController {
 
     async getUsers(req: Request, res: Response) {
         try {
-            let users = await this.usecase.getUsers();
-            console.log(users)
+            let page = req.query.page || 1;
+            let limit = parseInt(req.query.limit as string);
+            let users = await this.usecase.getUsers(page as number, limit);
+
             if (users) {
-                res.status(200).json({ success: true, users })
+                res.status(200).json({ success: true, users: users.users, total: users.total })
             } else {
                 res.status(500).json({ success: false, message: "Internal server error" })
             }
@@ -68,9 +70,12 @@ class AdminController {
     }
     async getProfessionals(req: Request, res: Response) {
         try {
-            let profs = await this.usecase.getProfessionals();
+            let page = req.query.page || 1;
+            let limit = parseInt(req.query.limit as string);
+
+            let profs = await this.usecase.getProfessionals(page as number, limit);
             if (profs) {
-                res.status(200).json({ success: true, profs })
+                res.status(200).json({ success: true, profs: profs.professionals, total: profs.total })
             } else {
                 res.status(200).json({ success: false, message: "Internal server error" })
             }
@@ -99,10 +104,10 @@ class AdminController {
             let category = req.body.name;
             let image = req.file;
             let savedData = await this.usecase.addCategory(category, image);
-            if (savedData) {
+            if (savedData.success) {
                 res.status(200).json({ success: true });
             } else {
-                res.status(500).json({ success: false, message: "Internal server error!" })
+                res.status(500).json({ success: false, message: savedData.message })
             }
 
         } catch (err) {
@@ -111,15 +116,32 @@ class AdminController {
         }
     }
 
+    async editCategory(req: Request, res: Response) {
+        try {
+            console.log('in editcategory controller')
+            let { id, name } = req.body;
+            let image = req.file;
+            console.log(id, name, image)
+            let result = await this.usecase.editCategory(id, name, image);
+            if (result.success) {
+                res.status(200).json({ success: true });
+            } else {
+                res.status(500).json({ success: false, message: result.message });
+            }
+        } catch (err) {
+            res.status(500).json({ success: false, message: 'Internal server error!' });
+        }
+    }
+
     async addJobrole(req: Request, res: Response) {
         try {
             let name = req.body.name;
             console.log(name)
             let savedData = await this.usecase.addJobrole(name);
-            if (savedData) {
+            if (savedData.success) {
                 res.status(200).json({ success: true });
-            } else {
-                res.status(500).json({ success: false, message: "Internal server error!" })
+            } else if (!savedData.success) {
+                res.status(500).json({ success: false, message: savedData.message })
             }
         } catch (err) {
             console.log(err);
@@ -165,10 +187,10 @@ class AdminController {
         try {
             let { id, name } = req.body;
             let saved = await this.usecase.editJobrole(id, name);
-            if (saved) {
+            if (saved.success) {
                 res.status(200).json({ success: true });
             } else {
-                res.status(500).json({ success: false, message: 'Something went wrong!' })
+                res.status(500).json({ success: false, message: saved.message })
             }
         } catch (err) {
             console.log(err);

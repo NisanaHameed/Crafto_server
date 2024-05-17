@@ -120,7 +120,7 @@ class ProfUsecase {
             }
         })
     }
-    
+
     async login(email: string, password: string) {
         try {
             let profdata: any = await this.profRepository.findByEmail(email);
@@ -233,8 +233,10 @@ class ProfUsecase {
     async editPassword(id: string, cpassword: string, npassword: string) {
         try {
             let profdata = await this.profRepository.findProfById(id);
-            if (profdata && profdata.password == cpassword) {
-                let res = await this.profRepository.updatePassword(id, npassword);
+            let hashedCPassword = await this.hash.compare(cpassword,profdata?.password as string)
+            if (profdata && hashedCPassword) {
+                let hashed = await this.hash.hashPassword(npassword)
+                let res = await this.profRepository.updatePassword(id, hashed);
                 if (res) {
                     return { success: true };
                 } else {
@@ -285,8 +287,8 @@ class ProfUsecase {
     async changePassword(token: string, password: string) {
         try {
             let decoded = await this.jwt.verifyToken(token) as JwtPayload;
-            let hasedPassword = await this.hash.hashPassword(password);
-            const result = await this.profRepository.changePassword(decoded.email, hasedPassword);
+            let hashedPassword = await this.hash.hashPassword(password);
+            const result = await this.profRepository.changePassword(decoded.email, hashedPassword);
             return result;
         } catch (err) {
             throw err;

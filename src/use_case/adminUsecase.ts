@@ -44,29 +44,29 @@ class AdminUsecase {
     }
     async getDashboard() {
         try {
-            const subscriptions:any = await this.stripe.fetchSubscriptions();
-            const revenue = subscriptions.data.reduce((acc:any, sub:any) => acc + sub?.plan?.amount * sub.quantity, 0);
-            const revenueByDate = subscriptions.data.reduce((acc:any,sub:any)=>{
-                const date = new Date(sub.current_period_start*1000).toLocaleDateString('en-US');
-                const amount = (sub.plan.amount/100)*sub.quantity;
-                if(!acc[date]){
+            const subscriptions: any = await this.stripe.fetchSubscriptions();
+            const revenue = subscriptions.data.reduce((acc: any, sub: any) => acc + sub?.plan?.amount * sub.quantity, 0);
+            const revenueByDate = subscriptions.data.reduce((acc: any, sub: any) => {
+                const date = new Date(sub.current_period_start * 1000).toLocaleDateString('en-US');
+                const amount = (sub.plan.amount / 100) * sub.quantity;
+                if (!acc[date]) {
                     acc[date] = 0;
                 }
                 acc[date] += amount;
                 return acc;
-            },{});
-            console.log('revenue',revenue)
-            const totalRevenue = revenue/100; 
+            }, {});
+            console.log('revenue', revenue)
+            const totalRevenue = revenue / 100;
             const data = await this.repository.getDashboardDetails();
-            const result = {...data,totalRevenue,revenueByDate}
+            const result = { ...data, totalRevenue, revenueByDate }
             return result;
         } catch (err) {
             throw err;
         }
     }
-    async getUsers() {
+    async getUsers(page:number,limit:number) {
         try {
-            let users = await this.repository.getUsers();
+            let users = await this.repository.getUsers(page,limit);
             return users;
         } catch (err) {
             console.log(err);
@@ -82,9 +82,9 @@ class AdminUsecase {
             throw err;
         }
     }
-    async getProfessionals() {
+    async getProfessionals(page:number,limit:number) {
         try {
-            let profs = await this.repository.getProfessionals();
+            let profs = await this.repository.getProfessionals(page,limit);
             return profs;
         } catch (err) {
             console.log(err);
@@ -103,12 +103,35 @@ class AdminUsecase {
 
     async addCategory(name: string, image: any) {
         try {
+            let findCategory = await this.repository.findCategory(name);
+            if (findCategory) {
+                return { success: false, message: 'Category already exists!' };
+            }
             let upload = await this.cloudinary.uploadToCloud(image);
             this.deleteImageFile(image.filename);
             let saveData = await this.repository.saveCategory(name, upload);
-            return saveData;
+            return { success: true, saveData };
         } catch (err) {
             throw err
+        }
+    }
+
+    async editCategory(id: string, name: string, image: any) {
+        try {
+            let findCategory = await this.repository.findCategory(name);
+            if (findCategory && findCategory._id !== id) {
+                return { success: false, message: 'Category name already exists!' };
+            } else {
+                let uploadedImage = await this.cloudinary.uploadToCloud(image);
+                let edited = await this.repository.editCategory(id, name, uploadedImage);
+                if (edited) {
+                    return { success: true };
+                } else {
+                    return { success: false, message: 'Category is not added!' };
+                }
+            }
+        } catch (err) {
+            throw err;
         }
     }
 
@@ -125,8 +148,12 @@ class AdminUsecase {
 
     async addJobrole(name: string) {
         try {
+            let findJobrole = await this.repository.findJobrole(name);
+            if (findJobrole) {
+                return { success: false, message: 'Jobrole already exists!' };
+            }
             let saveData = await this.repository.saveJobrole(name);
-            return saveData;
+            return { success: true, saveData };
         } catch (err) {
             throw err;
         }
@@ -161,8 +188,14 @@ class AdminUsecase {
 
     async editJobrole(id: string, name: string) {
         try {
+            let findJobrole = await this.repository.findJobrole(name);
+            if (findJobrole && findJobrole._id == id) {
+                return { success: false, message: 'This is same category name!' };
+            } else if (findJobrole) {
+                return { success: false, message: 'Jobrole already exists!' };
+            }
             let res = await this.repository.editJobrole(id, name);
-            return res;
+            return { success: true, res };
         } catch (err) {
             throw err;
         }
