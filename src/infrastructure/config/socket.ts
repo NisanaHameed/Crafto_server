@@ -11,9 +11,7 @@ function socketServer(server: any) {
 
     const io = new Server(server, {
         cors: {
-            origin: 'https://crafto-one.vercel.app',
-            methods: ['GET', 'POST'],
-            credentials: true
+            origin: '*',
         }
     });
 
