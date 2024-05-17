@@ -94,6 +94,12 @@ class UserController {
             const { name, email, password } = req.body;
             const savedUser = await this.Userusecase.gSignup(name, email, password);
             if (savedUser.success) {
+                res.cookie('userToken', savedUser.token, {
+                    expires: new Date(Date.now() + 25892000000),
+                    httpOnly: true,
+                    sameSite:'none',
+                    secure:true
+                })
                 res.status(200).json({ success: true, token: savedUser.token })
             } else {
                 res.status(401).json({ message: savedUser.message })
