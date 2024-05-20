@@ -21,7 +21,7 @@ const createServer = () => {
         app.use((0, cookie_parser_1.default)());
         app.use((0, cors_1.default)({
             origin: ['https://crafto-one.vercel.app'],
-            methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+            methods: ['GET,HEAD,PUT,PATCH,POST,DELETE'],
             credentials: true
         }));
         app.use('/api/', userRoute_1.default);
