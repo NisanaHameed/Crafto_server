@@ -1,0 +1,23 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = __importDefault(require("express"));
+const chatController_1 = __importDefault(require("../../adaptors/controllers/chatController"));
+const chatUsecase_1 = __importDefault(require("../../use_case/chatUsecase"));
+const conversationRepository_1 = __importDefault(require("../repository/conversationRepository"));
+const messageRepository_1 = __importDefault(require("../repository/messageRepository"));
+const profAuth_1 = __importDefault(require("../middleware/profAuth"));
+const userAuth_1 = __importDefault(require("../middleware/userAuth"));
+const conversationRepository = new conversationRepository_1.default();
+const messageRepository = new messageRepository_1.default();
+const usecase = new chatUsecase_1.default(conversationRepository, messageRepository);
+const controller = new chatController_1.default(usecase);
+const router = express_1.default.Router();
+router.post('/newConversation/:id', userAuth_1.default, (req, res) => controller.newConversation(req, res));
+router.get('/conversations', profAuth_1.default, (req, res) => controller.getConversations(req, res));
+router.post('/newMessage', (req, res) => controller.newMessage(req, res));
+router.get('/messages/:id', (req, res) => controller.getMessages(req, res));
+router.get('/getUserById/:id', (req, res) => controller.getUserById(req, res));
+exports.default = router;

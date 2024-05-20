@@ -17,7 +17,8 @@ export const createServer = () => {
 
         app.use(
             cors({
-                origin: 'https://crafto-one.vercel.app',
+                // origin: 'https://crafto-one.vercel.app',
+                origin:'http://localhost:5173',
                 methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
                 credentials: true
             })
