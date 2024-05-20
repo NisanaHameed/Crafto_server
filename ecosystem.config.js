@@ -1,7 +1,7 @@
 module.exports = {
     apps: [
         {
-            name: "crafto",
+            name: "crafto_server",
             script: "./dist/server.js",
             instances: 1,
             autorestart: true,
