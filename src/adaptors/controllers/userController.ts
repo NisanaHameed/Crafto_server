@@ -83,7 +83,7 @@ class UserController {
             }
         } catch (err) {
             console.log(err);
-            res.status(500).json({ message: 'Internal server error!' })
+            res.status(500).json({ message: 'Internal server error' })
         }
 
     }
@@ -93,6 +93,7 @@ class UserController {
             console.log('in gsignup')
             const { name, email, password } = req.body;
             const savedUser = await this.Userusecase.gSignup(name, email, password);
+            console.log('Saved user...',savedUser);
             if (savedUser.success) {
                 res.cookie('userToken', savedUser.token, {
                     expires: new Date(Date.now() + 25892000000),

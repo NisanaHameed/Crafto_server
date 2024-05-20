@@ -11,7 +11,7 @@ function socketServer(server: any) {
 
     const io = new Server(server, {
         cors: {
-            origin: '*',
+            origin: '*'
         }
     });
 
