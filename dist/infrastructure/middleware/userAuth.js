@@ -20,13 +20,11 @@ const jwt = new jwt_1.default();
 dotenv_1.default.config();
 const userAuth = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     let token = req.cookies.userToken;
-    console.log('token...', token);
     if (!token) {
         return res.status(401).json({ success: false, message: "Unauthorized" });
     }
     try {
         const decoded = jwt.verifyToken(token);
-        console.log('decoded....', decoded);
         if (decoded && decoded.role !== 'user') {
             return res.status(401).send({ success: false, message: "Unauthorized" });
         }

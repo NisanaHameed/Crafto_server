@@ -17,7 +17,6 @@ const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
 const jwt = new jwt_1.default();
 const adminAuth = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log('In adminAuth');
     let token = req.cookies.adminToken;
     if (!token) {
         return res.status(401).json({ success: false, message: "Unauthorized" });

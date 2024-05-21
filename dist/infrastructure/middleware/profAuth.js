@@ -19,9 +19,7 @@ const repository = new profRepository_1.default();
 dotenv_1.default.config();
 const jwt = new jwt_1.default();
 const profAuth = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log('In ProfAuth');
     let token = req.cookies.profToken;
-    console.log('Token...', token);
     if (!token) {
         return res.status(401).json({ success: false, message: "Please Login!" });
     }

@@ -149,6 +149,7 @@ class PostRepository {
                 if (searchTerm) {
                     query.$or = [
                         { category: { $regex: searchTerm, $options: 'i' } },
+                        { caption: { $regex: searchTerm, $options: 'i' } },
                     ];
                 }
                 if (category && category !== 'all') {
