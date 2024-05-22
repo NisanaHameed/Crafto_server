@@ -1,4 +1,4 @@
-interface ICloudinary{
-    uploadToCloud(file:any):Promise<string>;
+interface ICloudinary {
+    uploadToCloud(file: any): Promise<string>;
 }
 export default ICloudinary;

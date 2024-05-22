@@ -11,7 +11,7 @@ interface IProfInterface {
     updatePassword(id: string, password: string): Promise<boolean>
     findProfessionals(id: string): Promise<Professional | null>
     savePost(postId: string, profId: string, save: string): Promise<boolean>
-    updateIsVerified(profId: string,isVerified:boolean): Promise<boolean>
+    updateIsVerified(profId: string, isVerified: boolean): Promise<boolean>
     createSubscription(data: Subscription): Promise<boolean>
     updateSubscription(profId: string, subscriptionID: string): Promise<boolean>
     changePassword(email: string, password: string): Promise<boolean>

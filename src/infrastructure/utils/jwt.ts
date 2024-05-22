@@ -13,7 +13,6 @@ class JWT {
       const token = jwt.sign(payload, this.authSecret, { expiresIn: '30d' });
       return token;
     } catch (error) {
-      console.error('Error while generating JWT token:', error);
       throw error;
     }
   }
@@ -22,7 +21,6 @@ class JWT {
       const decoded = jwt.verify(token, this.authSecret) as JwtPayload;
       return decoded;
     } catch (err) {
-      console.error('Error while verifying JWT token:', err);
       throw err;
     }
   }

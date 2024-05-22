@@ -13,7 +13,7 @@ class PostUsecase {
         this.repository = repository;
     }
 
-    async createPost(post: Post,filename:string) {
+    async createPost(post: Post, filename: string) {
         try {
             let uploadImage = await this.cloudinary.uploadToCloud(post.image);
             post.image = uploadImage;
@@ -24,7 +24,7 @@ class PostUsecase {
             throw err;
         }
     }
-    
+
     async deleteImageFile(filename: any) {
         const imagePath = join(__dirname, '../infrastructure/public/images', filename);
         unlink(imagePath, (err: any) => {

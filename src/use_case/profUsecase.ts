@@ -87,9 +87,7 @@ class ProfUsecase {
                 let hashedP = await this.hash.hashPassword(decoded.profData.password);
                 profdata.email = decoded.profData.email;
                 profdata.password = hashedP;
-                console.log(profdata.image);
                 let uploadFile = await this.cloudinary.uploadToCloud(profdata.image);
-                console.log('uploaded file' + uploadFile)
                 this.deleteImageFile(filename);
                 profdata.image = uploadFile
                 let newProf: any = await this.profRepository.saveProfessional(profdata);
@@ -105,7 +103,6 @@ class ProfUsecase {
 
 
         } catch (err) {
-            console.log(err);
             throw err;
         }
     }
@@ -139,7 +136,6 @@ class ProfUsecase {
                 return { success: false, message: "Email not found" }
             }
         } catch (err) {
-            console.log(err);
             throw err;
         }
     }
@@ -155,7 +151,6 @@ class ProfUsecase {
                 return { success: true, token }
             }
         } catch (err) {
-            console.log(err);
             throw err;
         }
     }
@@ -165,7 +160,6 @@ class ProfUsecase {
             const profdata = await this.profRepository.findProfById(id);
             return profdata;
         } catch (err) {
-            console.log(err);
             throw err;
         }
     }
@@ -233,7 +227,7 @@ class ProfUsecase {
     async editPassword(id: string, cpassword: string, npassword: string) {
         try {
             let profdata = await this.profRepository.findProfById(id);
-            let hashedCPassword = await this.hash.compare(cpassword,profdata?.password as string)
+            let hashedCPassword = await this.hash.compare(cpassword, profdata?.password as string)
             if (profdata && hashedCPassword) {
                 let hashed = await this.hash.hashPassword(npassword)
                 let res = await this.profRepository.updatePassword(id, hashed);
@@ -260,7 +254,6 @@ class ProfUsecase {
                 const otp = this.generateOtp.generateOtp();
                 console.log(otp);
                 let token = jwt.sign({ email, otp }, process.env.AUTH_SECRET as string, { expiresIn: '5m' });
-                console.log('Created token ', token)
                 await this.sendMail.sendMail(email, otp);
                 return { data: true, token };
             }
@@ -271,8 +264,6 @@ class ProfUsecase {
 
     async verifyOtpForgotPassword(token: string, otp: string) {
         try {
-            console.log('In verifyOtpForgotPassword usecase');
-            console.log('token...', token)
             let decoded = await jwt.verify(token, process.env.AUTH_SECRET as string) as JwtPayload;
             if (decoded.otp !== otp) {
                 return false
@@ -328,7 +319,6 @@ class ProfUsecase {
 
             const prof: any = await this.profRepository.findProfById(profId);
             const stripeRes = await this.stripe.makePayment(prof.email, plan, profId);
-            // const updateProf = await this.profRepository.updateProfile(profId, { stripeSessionId: stripeRes } as Professional);
             return stripeRes;
         } catch (err) {
             return err;

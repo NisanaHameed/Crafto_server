@@ -30,18 +30,15 @@ class UserController {
 
     async verifyOTP(req: Request, res: Response) {
         try {
-            console.log('in verifyotp');
-
             let token = req.headers.authorization?.split(' ')[1] as string
-            console.log('token' + token)
             let userOtp = req.body.otp;
             let saveduser = await this.Userusecase.saveUSer(token, userOtp)
             if (saveduser.success) {
                 res.cookie('userToken', saveduser.token, {
                     expires: new Date(Date.now() + 25892000000),
                     httpOnly: true,
-                    sameSite:'none',
-                    secure:true
+                    sameSite: 'none',
+                    secure: true
                 })
                 res.status(200).json(saveduser)
             } else {
@@ -49,7 +46,6 @@ class UserController {
             }
 
         } catch (err) {
-            console.log(err);
             res.status(500).json({ success: false, message: 'Internal server error!' })
         }
 
@@ -74,15 +70,14 @@ class UserController {
                 res.cookie('userToken', userCheck.token, {
                     expires: new Date(Date.now() + 25892000000),
                     httpOnly: true,
-                    sameSite:'none',
-                    secure:true
+                    sameSite: 'none',
+                    secure: true
                 })
                 res.status(200).json({ success: true, token: userCheck.token })
             } else {
                 res.status(401).json({ success: false, message: userCheck.message })
             }
         } catch (err) {
-            console.log(err);
             res.status(500).json({ message: 'Internal server error' })
         }
 
@@ -93,20 +88,20 @@ class UserController {
             console.log('in gsignup')
             const { name, email, password } = req.body;
             const savedUser = await this.Userusecase.gSignup(name, email, password);
-            console.log('Saved user...',savedUser);
+            console.log('Saved user...', savedUser);
             if (savedUser.success) {
                 res.cookie('userToken', savedUser.token, {
                     expires: new Date(Date.now() + 25892000000),
                     httpOnly: true,
-                    sameSite:'none',
-                    secure:true
+                    sameSite: 'none',
+                    secure: true
                 })
                 res.status(200).json({ success: true, token: savedUser.token })
             } else {
                 res.status(401).json({ message: savedUser.message })
             }
         } catch (err) {
-            console.log(err);
+            res.status(500).json({ message: 'Internal server error' })
         }
     }
 
@@ -120,7 +115,6 @@ class UserController {
                 res.status(401).json({ success: false, message: "UserId is not found" })
             }
         } catch (err) {
-            console.log(err);
             res.status(500).json({ success: false, message: 'Internal server error!' })
         }
     }
@@ -132,7 +126,7 @@ class UserController {
             editedData.image = image;
             let filename = req.file?.filename;
             if (userId) {
-                let updated = await this.Userusecase.updateProfile(userId, editedData,filename as string);
+                let updated = await this.Userusecase.updateProfile(userId, editedData, filename as string);
                 if (updated) {
                     res.status(200).json({ success: true });
                 } else {
@@ -142,7 +136,6 @@ class UserController {
                 res.status(401).json({ success: false, message: "Something went wrong!Try again!" })
             }
         } catch (err) {
-            console.log(err);
             res.status(500).json({ success: false, message: "Internal server error!" })
         }
     }
@@ -169,8 +162,7 @@ class UserController {
             })
             res.status(200).json({ success: true })
         } catch (err) {
-            console.log(err);
-
+            res.status(500).json({ success: false, message: "Internal server error!" })
         }
     }
 
@@ -193,7 +185,6 @@ class UserController {
 
     async unfollowProfessional(req: Request, res: Response) {
         try {
-            console.log('in unfollow controller fn')
             let userId = req.userId as string;
             let profId = req.body.profId;
 
@@ -226,7 +217,6 @@ class UserController {
 
     async forgotPassword(req: Request, res: Response) {
         try {
-            console.log('in Forgot password controller')
             let email = req.body.email;
             const data = await this.Userusecase.forgotPassword(email);
             if (!data.data) {
@@ -242,7 +232,6 @@ class UserController {
     async verifyOtpForgotPassword(req: Request, res: Response) {
         try {
             let token = req.headers.authorization?.split(' ')[1] as string;
-            console.log(token)
             let otp = req.body.otp;
             const result = await this.Userusecase.verifyOtpForgotPassword(token, otp);
             if (result) {

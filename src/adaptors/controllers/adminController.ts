@@ -23,7 +23,6 @@ class AdminController {
                 res.status(401).json(data)
             }
         } catch (err) {
-            console.log(err);
             res.status(500).json({ success: false, message: "Internal server error" })
         }
     }
@@ -49,14 +48,12 @@ class AdminController {
                 res.status(500).json({ success: false, message: "Internal server error" })
             }
         } catch (err) {
-            console.log(err);
             res.status(500).json({ success: false, message: "Internal server error" })
         }
     }
     async blockUser(req: Request, res: Response) {
         try {
             let userId = req.params.id;
-            console.log('userid' + userId)
             let blocked = await this.usecase.blockUser(userId);
             if (blocked) {
                 res.status(200).json({ success: true });
@@ -64,7 +61,6 @@ class AdminController {
                 res.status(200).json({ success: false, message: "Internal server error" })
             }
         } catch (err) {
-            console.log(err);
             res.status(500).json({ success: false, message: "Internal server error" })
         }
     }
@@ -80,7 +76,6 @@ class AdminController {
                 res.status(200).json({ success: false, message: "Internal server error" })
             }
         } catch (err) {
-            console.log(err);
             res.status(500).json({ success: false, message: "Internal server error" })
         }
     }
@@ -109,19 +104,15 @@ class AdminController {
             } else {
                 res.status(500).json({ success: false, message: savedData.message })
             }
-
         } catch (err) {
-            console.log(err);
             res.status(500).json({ success: false, message: "Internal server error!" })
         }
     }
 
     async editCategory(req: Request, res: Response) {
         try {
-            console.log('in editcategory controller')
             let { id, name } = req.body;
             let image = req.file;
-            console.log(id, name, image)
             let result = await this.usecase.editCategory(id, name, image);
             if (result.success) {
                 res.status(200).json({ success: true });
@@ -136,7 +127,6 @@ class AdminController {
     async addJobrole(req: Request, res: Response) {
         try {
             let name = req.body.name;
-            console.log(name)
             let savedData = await this.usecase.addJobrole(name);
             if (savedData.success) {
                 res.status(200).json({ success: true });
@@ -144,7 +134,6 @@ class AdminController {
                 res.status(500).json({ success: false, message: savedData.message })
             }
         } catch (err) {
-            console.log(err);
             res.status(500).json({ success: false, message: "Internal server error!" })
         }
     }
@@ -170,7 +159,6 @@ class AdminController {
     async deleteJobrole(req: Request, res: Response) {
         try {
             let id = req.params.id;
-            console.log(id)
             let deleted = await this.usecase.deleteJobrole(id);
             if (deleted) {
                 res.status(200).json({ success: true });
@@ -178,7 +166,6 @@ class AdminController {
                 res.status(500).json({ success: false, message: 'Something went wrong!' });
             }
         } catch (err) {
-            console.log(err);
             res.status(500).json({ success: false, message: 'Internal server error!' });
         }
     }
@@ -193,7 +180,6 @@ class AdminController {
                 res.status(500).json({ success: false, message: saved.message })
             }
         } catch (err) {
-            console.log(err);
             res.status(500).json({ success: false, message: err });
         }
     }
@@ -206,8 +192,7 @@ class AdminController {
             })
             res.status(200).json({ success: true })
         } catch (err) {
-            console.log(err);
-
+            res.status(500).json({ success: false, message: 'Internal server error!' });
         }
     }
 

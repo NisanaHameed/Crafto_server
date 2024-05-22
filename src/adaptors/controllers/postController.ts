@@ -16,7 +16,7 @@ class PostController {
             postData.image = image;
             postData.profId = profId
             let filename = req.file?.filename;
-            let result = await this.usecase.createPost(postData,filename as string);
+            let result = await this.usecase.createPost(postData, filename as string);
             if (result) {
                 res.status(200).json({ success: true });
             } else {
@@ -54,7 +54,6 @@ class PostController {
                 res.status(500).json({ success: false, message: 'Failed to fetch data' });
             }
         } catch (err) {
-            console.log(err);
             res.status(500).json({ success: false, message: 'Internal server error!' })
         }
     }

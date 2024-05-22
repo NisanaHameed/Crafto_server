@@ -8,12 +8,9 @@ class MessageRepository implements IMessageRepository {
     async saveMessage(chat: Message): Promise<Message | null> {
 
         try {
-            console.log('In saveMessage')
             const newMessage = new messageModel(chat);
             await newMessage.save();
-            let updated = await conversationModel.updateOne({ _id: chat.conversationId }, { $set: { updatedAt: Date.now() } });
-            console.log(updated)
-            console.log(newMessage)
+            await conversationModel.updateOne({ _id: chat.conversationId }, { $set: { updatedAt: Date.now() } });
             return newMessage;
         } catch (err) {
             throw new Error('Failed to save message!');

@@ -13,7 +13,6 @@ class PostRepository implements IPostRepository {
             await newPost.save();
             return (newPost ? true : false);
         } catch (err) {
-            console.log(err);
             throw new Error('Failed to save post!');
         }
     }
@@ -23,18 +22,15 @@ class PostRepository implements IPostRepository {
             let postData: any = await postModel.find({ profId: profId });
             return postData;
         } catch (err) {
-            console.log(err);
             throw new Error();
         }
     }
 
     async getDesigns(category: string): Promise<Post | null> {
         try {
-            console.log(category);
             let designs: any = await postModel.find({ category: category }).populate('profId');
             return designs;
         } catch (err) {
-            console.log(err);
             throw new Error('Failed to fetch designs!');
         }
     }
@@ -58,7 +54,6 @@ class PostRepository implements IPostRepository {
     async getPortraits(id: string): Promise<Post | null> {
         try {
             let portraits: any = await postModel.find({ profId: id, isPortrait: true });
-            console.log(portraits);
             return portraits;
         } catch (err) {
             throw new Error('Failed to fetch portrait!');
@@ -67,7 +62,6 @@ class PostRepository implements IPostRepository {
     async likePost(id: string, userID: string, role: string): Promise<Post | null> {
         try {
             const updated: any = await postModel.findOneAndUpdate({ _id: id, 'likes.user': { $ne: userID } }, { $push: { likes: { user: userID, type: role } } }, { new: true });
-            console.log(updated)
             return updated;
         } catch (err) {
             throw new Error('Failed to update the post');
@@ -76,9 +70,7 @@ class PostRepository implements IPostRepository {
 
     async unlikePost(id: string, userId: string): Promise<Post | null> {
         try {
-            console.log(id, userId)
             const updated: any = await postModel.findOneAndUpdate({ _id: id }, { $pull: { likes: { user: userId } } }, { new: true });
-            console.log(updated)
             return updated;
         } catch (err) {
             throw new Error('Failed to update the post');
@@ -116,7 +108,6 @@ class PostRepository implements IPostRepository {
 
     async searchDesigns(searchTerm: string, category: string, sort: number, page: number, limit: number): Promise<ISearch | null> {
         try {
-            console.log('page', page, limit, sort)
             let query: any = {};
             if (searchTerm) {
                 query.$or = [

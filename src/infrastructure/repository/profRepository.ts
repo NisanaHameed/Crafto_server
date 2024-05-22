@@ -11,7 +11,6 @@ class ProfRepository implements profInterface {
             let data = await ProfModel.findOne({ email: email })
             return data
         } catch (err) {
-            console.log(err);
             throw new Error("Failed to fetch data by email")
         }
     }
@@ -21,7 +20,6 @@ class ProfRepository implements profInterface {
             await newProf.save();
             return newProf;
         } catch (err) {
-            console.log(err);
             throw new Error("Failed to save data")
         }
     }
@@ -33,7 +31,6 @@ class ProfRepository implements profInterface {
             });
             return data;
         } catch (err) {
-            console.log(err);
             throw new Error("Failed to find data by id")
         }
     }
@@ -42,7 +39,6 @@ class ProfRepository implements profInterface {
             let data = await ProfModel.updateOne({ _id: id }, { $set: editeddata });
             return data.acknowledged;
         } catch (err) {
-            console.log(err);
             throw new Error("Failed to update data")
         }
     }
@@ -51,7 +47,6 @@ class ProfRepository implements profInterface {
             let data = await ProfModel.updateOne({ _id: id }, { $set: { image: image } })
             return data.acknowledged;
         } catch (err) {
-            console.log(err);
             throw new Error("Failed to update image")
         }
     }
@@ -61,7 +56,6 @@ class ProfRepository implements profInterface {
             let data = await ProfModel.updateOne({ _id: id }, { $set: { email: email } })
             return data.acknowledged;
         } catch (err) {
-            console.log(err);
             throw new Error("Failed to update email")
         }
     }
@@ -71,7 +65,6 @@ class ProfRepository implements profInterface {
             let data = await ProfModel.updateOne({ _id: id }, { $set: { password: password } }, { new: true })
             return data.acknowledged;
         } catch (err) {
-            console.log(err);
             throw new Error("Failed to update password")
         }
     }
@@ -109,7 +102,6 @@ class ProfRepository implements profInterface {
 
     async updateIsVerified(profId: string, isVerified: boolean): Promise<boolean> {
         try {
-
             const prof = await ProfModel.findOneAndUpdate({ _id: profId }, { $set: { isVerified: isVerified }, $unset: { subscriptionID: 1 } }, { new: true });
             return (prof ? true : false);
         } catch (err) {
@@ -144,10 +136,8 @@ class ProfRepository implements profInterface {
     async changePassword(email: string, password: string): Promise<boolean> {
         try {
             let result = await ProfModel.updateOne({ email: email }, { $set: { password: password } });
-            console.log(result)
             return result.acknowledged;
         } catch (err) {
-            console.log(err);
             throw new Error('failed to update password!');
         }
     }

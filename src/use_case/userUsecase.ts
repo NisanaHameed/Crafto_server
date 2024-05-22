@@ -45,14 +45,12 @@ class Userusecase {
                 }
             }
         } catch (err) {
-            console.log(err);
             throw err;
         }
     }
     async saveUSer(token: string, userOtp: string) {
         try {
             let decoded = this.jwt.verifyToken(token)
-            console.log('decoded', decoded)
             if (decoded) {
                 if (userOtp == decoded.otp) {
                     let hashedP = await this.hash.hashPassword(decoded.userData.password)
@@ -72,7 +70,6 @@ class Userusecase {
             }
 
         } catch (err) {
-            console.log(err);
             throw err;
         }
     }
@@ -110,7 +107,6 @@ class Userusecase {
             }
 
         } catch (err) {
-            console.log(err);
             throw err;
         }
     }
@@ -131,7 +127,6 @@ class Userusecase {
                 }
             }
         } catch (err) {
-            console.log(err);
             throw err;
         }
     }
@@ -141,7 +136,6 @@ class Userusecase {
             const userdata = await this.userRepository.findUserById(id);
             return userdata;
         } catch (err) {
-            console.log(err);
             throw err;
         }
     }
@@ -156,7 +150,6 @@ class Userusecase {
             let res = await this.userRepository.updateUser(id, editedData);
             return res;
         } catch (err) {
-            console.log(err);
             throw err;
         }
     }

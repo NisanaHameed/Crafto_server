@@ -10,7 +10,7 @@ const chat = new MessageRepository();
 
 const startServer = async () => {
     try {
-        
+
         await connectDb();
         const app = createServer();
         app?.listen(3000, () => {

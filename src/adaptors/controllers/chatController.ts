@@ -13,7 +13,6 @@ class ChatController {
         try {
 
             let senderId = req.userId;
-            // let senderId = '66054acff4efb06f3be368e8'
             const receiverId = req.params.id;
             if (senderId) {
                 const newConversation = await this.usecase.saveConversation(senderId, receiverId);
@@ -56,7 +55,7 @@ class ChatController {
             const data = req.body;
             const message = await this.usecase.newMessage(data);
             if (message) {
-                res.status(200).json({ success: true ,message});
+                res.status(200).json({ success: true, message });
             } else {
                 res.status(500).json({ success: false, message: 'Message is not saved.try again' })
             }
@@ -70,7 +69,7 @@ class ChatController {
             const conversationId = req.params.id;
             const messages = await this.usecase.getMessages(conversationId);
             res.status(200).json({ success: true, messages });
-            
+
         } catch (err) {
             res.status(500).json({ success: false, message: 'Internal server error' })
         }

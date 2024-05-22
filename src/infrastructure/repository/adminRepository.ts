@@ -27,7 +27,6 @@ class AdminRepository implements AdminInterface {
             let admindata = await AdminModel.findOne({ email: email });
             return admindata;
         } catch (err) {
-            console.log(err);
             throw new Error("Failed to find admin by email")
         }
     }
@@ -40,17 +39,14 @@ class AdminRepository implements AdminInterface {
             const total = await UserModel.countDocuments();
             return { users, total };
         } catch (err) {
-            console.log(err);
             throw new Error("Failed to fetch users")
         }
 
     }
     async blockUser(id: string): Promise<boolean> {
         try {
-            console.log('id' + id);
 
             let user = await UserModel.findById(id);
-            console.log('user' + user)
             if (user) {
                 await UserModel.findByIdAndUpdate(id, { $set: { isBlocked: !user.isBlocked } })
                 return true;
@@ -58,7 +54,6 @@ class AdminRepository implements AdminInterface {
                 return false;
             }
         } catch (err) {
-            console.log(err);
             throw new Error("Failed to block user")
         }
     }
@@ -71,7 +66,6 @@ class AdminRepository implements AdminInterface {
             const total = await ProfModel.countDocuments();
             return { professionals, total };
         } catch (err) {
-            console.log(err);
             throw new Error("Failed to fetch users")
         }
     }
@@ -85,7 +79,6 @@ class AdminRepository implements AdminInterface {
                 return false;
             }
         } catch (err) {
-            console.log(err);
             throw new Error("Failed to block user")
         }
     }
@@ -98,7 +91,6 @@ class AdminRepository implements AdminInterface {
             await newData.save();
             return newData ? true : false;
         } catch (err) {
-            console.log(err);
             throw new Error("Failed to save category")
         }
     }
@@ -126,7 +118,6 @@ class AdminRepository implements AdminInterface {
             await newData.save();
             return newData ? true : false;
         } catch (err) {
-            console.log(err);
             throw new Error("Failed to save category")
         }
     }
@@ -145,7 +136,6 @@ class AdminRepository implements AdminInterface {
             const categories: any = await CategoryModel.find();
             return categories;
         } catch (err) {
-            console.log(err);
             throw new Error('Failed to fetch categories')
         }
     }
@@ -155,7 +145,6 @@ class AdminRepository implements AdminInterface {
             const jobrole: any = await JobroleModel.find();
             return jobrole;
         } catch (err) {
-            console.log(err);
             throw new Error('Failed to fetch jobroles!')
         }
     }
@@ -163,7 +152,6 @@ class AdminRepository implements AdminInterface {
     async deleteJobrole(id: string): Promise<Boolean> {
         try {
             const res = await JobroleModel.deleteOne({ _id: id });
-            console.log(res)
             return res.deletedCount == 1;
         } catch (err) {
             throw new Error('Failed to delete jobrole!')
@@ -173,7 +161,6 @@ class AdminRepository implements AdminInterface {
     async editJobrole(id: string, name: string): Promise<Boolean> {
         try {
             const res = await JobroleModel.updateOne({ _id: id }, { $set: { name: name } });
-            console.log(res);
             return (res ? true : false);
         } catch (err) {
             throw new Error('Failed to edit jobrole!');

@@ -38,7 +38,6 @@ class AdminUsecase {
                 return { success: false, message: "Email not found" }
             }
         } catch (err) {
-            console.log(err);
             throw err;
         }
     }
@@ -55,7 +54,6 @@ class AdminUsecase {
                 acc[date] += amount;
                 return acc;
             }, {});
-            console.log('revenue', revenue)
             const totalRevenue = revenue / 100;
             const data = await this.repository.getDashboardDetails();
             const result = { ...data, totalRevenue, revenueByDate }
@@ -64,12 +62,11 @@ class AdminUsecase {
             throw err;
         }
     }
-    async getUsers(page:number,limit:number) {
+    async getUsers(page: number, limit: number) {
         try {
-            let users = await this.repository.getUsers(page,limit);
+            let users = await this.repository.getUsers(page, limit);
             return users;
         } catch (err) {
-            console.log(err);
             throw err;
         }
     }
@@ -78,16 +75,14 @@ class AdminUsecase {
             let blocked = await this.repository.blockUser(id);
             return blocked;
         } catch (err) {
-            console.log(err);
             throw err;
         }
     }
-    async getProfessionals(page:number,limit:number) {
+    async getProfessionals(page: number, limit: number) {
         try {
-            let profs = await this.repository.getProfessionals(page,limit);
+            let profs = await this.repository.getProfessionals(page, limit);
             return profs;
         } catch (err) {
-            console.log(err);
             throw err;
         }
     }
@@ -96,7 +91,6 @@ class AdminUsecase {
             let blocked = await this.repository.blockProfessional(id);
             return blocked;
         } catch (err) {
-            console.log(err);
             throw err;
         }
     }

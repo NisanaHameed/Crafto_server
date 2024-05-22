@@ -20,15 +20,14 @@ export const createServer = () => {
                 origin: ['https://crafto-one.vercel.app'],
                 methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
                 credentials: true,
-                optionsSuccessStatus:200
+                optionsSuccessStatus: 200
             })
         )
 
-       
         app.use('/api/', userRoute);
-        app.use('/api/professional',professionalRoute);
-        app.use('/api/admin',adminRoute);
-        app.use('/api/chat',chatRoute);
+        app.use('/api/professional', professionalRoute);
+        app.use('/api/admin', adminRoute);
+        app.use('/api/chat', chatRoute);
 
         const server = http.createServer(app);
         socketServer(server);
@@ -36,7 +35,7 @@ export const createServer = () => {
         app.use((req, res) => {
             res.status(404).send('It is Not Found');
         });
-        
+
         return server;
 
     } catch (err) {

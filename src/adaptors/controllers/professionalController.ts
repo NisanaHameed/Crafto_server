@@ -18,7 +18,6 @@ class ProfController {
                 res.status(409).json({ success: false, message: "Email already exists" });
             }
         } catch (err) {
-            console.log(err);
             res.status(500).json({ success: false, message: 'Internal server error!' });
         }
     }
@@ -35,7 +34,6 @@ class ProfController {
             }
 
         } catch (err) {
-            console.log(err);
             res.status(500).json({ success: false, message: 'Internal server error!' });
         }
     }
@@ -52,20 +50,19 @@ class ProfController {
 
     async fillProfile(req: Request, res: Response) {
         try {
-            console.log('In fillProfile controller');
             let token = req.headers.authorization?.split(' ')[1] as string;
             let data = req.body;
             let image = req.file;
             let filename = req.file?.filename
-            console.log('image',image)
+            console.log('image', image)
             data.image = image;
-            let saved = await this.usecase.fillProfile(data, token,filename as string);
+            let saved = await this.usecase.fillProfile(data, token, filename as string);
             if (saved.success) {
                 res.cookie('profToken', saved.token, {
                     expires: new Date(Date.now() + 25892000000),
                     httpOnly: true,
                     sameSite: 'none',
-                    secure:true
+                    secure: true
                 })
                 res.status(200).json({ success: true, token: saved.token })
             } else {
@@ -73,14 +70,12 @@ class ProfController {
             }
 
         } catch (err) {
-            console.log(err);
             res.status(500).json({ success: false, message: 'Internal server error!' });
         }
     }
 
     async gsignup(req: Request, res: Response) {
         try {
-            console.log('in gsignup')
             const { email, password } = req.body;
             const savedUser = await this.usecase.gSignup(email, password);
             if (savedUser.success) {
@@ -89,7 +84,7 @@ class ProfController {
                 res.status(401).json({ message: savedUser.message })
             }
         } catch (err) {
-            console.log(err);
+            res.status(500).json({ success: false, message: 'Internal server error!' });
         }
     }
 
@@ -102,21 +97,19 @@ class ProfController {
                     expires: new Date(Date.now() + 25892000000),
                     httpOnly: true,
                     sameSite: 'none',
-                    secure:true
+                    secure: true
                 })
                 res.status(200).json({ success: true, token: profCheck.token })
             } else {
                 res.status(401).json({ message: profCheck.message })
             }
         } catch (err) {
-            console.log(err);
             res.status(500).json({ success: false, message: 'Internal server error!' });
         }
     }
     async getProfile(req: Request, res: Response) {
         try {
             const id = req.profId;
-            console.log('id' + id)
             if (id) {
                 let profdata = await this.usecase.getProfile(id);
                 res.status(200).json({ success: true, profdata })
@@ -124,7 +117,6 @@ class ProfController {
                 res.status(401).json({ success: false, message: "Incorrect ID" })
             }
         } catch (err) {
-            console.log(err);
             res.status(500).json({ success: false, message: "Internal server error" })
         }
     }
@@ -235,14 +227,12 @@ class ProfController {
             })
             res.status(200).json({ success: true })
         } catch (err) {
-            console.log(err);
-
+            res.status(500).json({ success: false, message: "Internal server error" })
         }
     }
 
     async forgotPassword(req: Request, res: Response) {
         try {
-            console.log('its here.........')
             let email = req.body.email;
             const data = await this.usecase.forgotPassword(email);
             if (!data.data) {
@@ -258,7 +248,6 @@ class ProfController {
     async verifyOtpForgotPassword(req: Request, res: Response) {
         try {
             let token = req.headers.authorization?.split(' ')[1] as string;
-            console.log('token in controller...', token)
             let otp = req.body.otp;
             const result = await this.usecase.verifyOtpForgotPassword(token, otp);
             if (result) {
@@ -312,7 +301,6 @@ class ProfController {
                 res.status(401).json({ success: false, message: "Incorrect ID" })
             }
         } catch (err) {
-            console.log(err);
             res.status(500).json({ success: false, message: "Internal server error" })
         }
     }
@@ -347,8 +335,7 @@ class ProfController {
     }
 
     async webhook(req: Request, res: Response) {
-        console.log('in webhook controller')
-        console.log(req.body.type)
+
         try {
             switch (req.body.type) {
                 case 'customer.subscription.created':

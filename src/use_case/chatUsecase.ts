@@ -54,7 +54,7 @@ class ChatUsecase {
         try {
             const messages = await this.message.findMessages(conversationId);
             return messages;
-        }catch(err){
+        } catch (err) {
             throw err;
         }
     }

@@ -29,7 +29,6 @@ class RequirementRepository implements IRequirementRepository {
 
             await notificationModel.insertMany(notifications);
             await newReq.save();
-            // await ProfModel.updateMany({ job: job, isVerified: true }, { $addToSet: { requirements: newReq._id } });
             return newReq
         } catch (err) {
             throw new Error('Failed to save requirement')

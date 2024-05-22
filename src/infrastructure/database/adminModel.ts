@@ -1,11 +1,6 @@
 import mongoose,{Document,Schema} from 'mongoose'
 import Admin from '../../domain/admin';
 
-// interface Admin extends Document{
-//     email:string,
-//     password:string
-// }
-
 const adminShema : Schema<Admin> = new mongoose.Schema({
     email:{
         type:String,
