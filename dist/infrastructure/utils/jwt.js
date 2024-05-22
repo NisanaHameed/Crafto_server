@@ -17,7 +17,6 @@ class JWT {
             return token;
         }
         catch (error) {
-            console.error('Error while generating JWT token:', error);
             throw error;
         }
     }
@@ -27,7 +26,6 @@ class JWT {
             return decoded;
         }
         catch (err) {
-            console.error('Error while verifying JWT token:', err);
             throw err;
         }
     }

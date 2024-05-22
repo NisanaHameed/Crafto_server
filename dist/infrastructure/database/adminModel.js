@@ -4,10 +4,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importDefault(require("mongoose"));
-// interface Admin extends Document{
-//     email:string,
-//     password:string
-// }
 const adminShema = new mongoose_1.default.Schema({
     email: {
         type: String,

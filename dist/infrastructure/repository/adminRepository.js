@@ -26,7 +26,6 @@ class AdminRepository {
                 return admindata;
             }
             catch (err) {
-                console.log(err);
                 throw new Error("Failed to find admin by email");
             }
         });
@@ -42,7 +41,6 @@ class AdminRepository {
                 return { users, total };
             }
             catch (err) {
-                console.log(err);
                 throw new Error("Failed to fetch users");
             }
         });
@@ -50,9 +48,7 @@ class AdminRepository {
     blockUser(id) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                console.log('id' + id);
                 let user = yield userModel_1.default.findById(id);
-                console.log('user' + user);
                 if (user) {
                     yield userModel_1.default.findByIdAndUpdate(id, { $set: { isBlocked: !user.isBlocked } });
                     return true;
@@ -62,7 +58,6 @@ class AdminRepository {
                 }
             }
             catch (err) {
-                console.log(err);
                 throw new Error("Failed to block user");
             }
         });
@@ -78,7 +73,6 @@ class AdminRepository {
                 return { professionals, total };
             }
             catch (err) {
-                console.log(err);
                 throw new Error("Failed to fetch users");
             }
         });
@@ -96,7 +90,6 @@ class AdminRepository {
                 }
             }
             catch (err) {
-                console.log(err);
                 throw new Error("Failed to block user");
             }
         });
@@ -112,7 +105,6 @@ class AdminRepository {
                 return newData ? true : false;
             }
             catch (err) {
-                console.log(err);
                 throw new Error("Failed to save category");
             }
         });
@@ -147,7 +139,6 @@ class AdminRepository {
                 return newData ? true : false;
             }
             catch (err) {
-                console.log(err);
                 throw new Error("Failed to save category");
             }
         });
@@ -170,7 +161,6 @@ class AdminRepository {
                 return categories;
             }
             catch (err) {
-                console.log(err);
                 throw new Error('Failed to fetch categories');
             }
         });
@@ -182,7 +172,6 @@ class AdminRepository {
                 return jobrole;
             }
             catch (err) {
-                console.log(err);
                 throw new Error('Failed to fetch jobroles!');
             }
         });
@@ -191,7 +180,6 @@ class AdminRepository {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const res = yield jobroleModel_1.default.deleteOne({ _id: id });
-                console.log(res);
                 return res.deletedCount == 1;
             }
             catch (err) {
@@ -203,7 +191,6 @@ class AdminRepository {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const res = yield jobroleModel_1.default.updateOne({ _id: id }, { $set: { name: name } });
-                console.log(res);
                 return (res ? true : false);
             }
             catch (err) {

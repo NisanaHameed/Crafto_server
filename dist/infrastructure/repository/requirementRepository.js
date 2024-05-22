@@ -41,7 +41,6 @@ class RequirementRepository {
                 });
                 yield notificationModel_1.default.insertMany(notifications);
                 yield newReq.save();
-                // await ProfModel.updateMany({ job: job, isVerified: true }, { $addToSet: { requirements: newReq._id } });
                 return newReq;
             }
             catch (err) {

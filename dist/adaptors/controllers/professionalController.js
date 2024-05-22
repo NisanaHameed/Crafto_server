@@ -27,7 +27,6 @@ class ProfController {
                 }
             }
             catch (err) {
-                console.log(err);
                 res.status(500).json({ success: false, message: 'Internal server error!' });
             }
         });
@@ -47,7 +46,6 @@ class ProfController {
                 }
             }
             catch (err) {
-                console.log(err);
                 res.status(500).json({ success: false, message: 'Internal server error!' });
             }
         });
@@ -69,7 +67,6 @@ class ProfController {
         return __awaiter(this, void 0, void 0, function* () {
             var _a, _b;
             try {
-                console.log('In fillProfile controller');
                 let token = (_a = req.headers.authorization) === null || _a === void 0 ? void 0 : _a.split(' ')[1];
                 let data = req.body;
                 let image = req.file;
@@ -91,7 +88,6 @@ class ProfController {
                 }
             }
             catch (err) {
-                console.log(err);
                 res.status(500).json({ success: false, message: 'Internal server error!' });
             }
         });
@@ -99,7 +95,6 @@ class ProfController {
     gsignup(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                console.log('in gsignup');
                 const { email, password } = req.body;
                 const savedUser = yield this.usecase.gSignup(email, password);
                 if (savedUser.success) {
@@ -110,7 +105,7 @@ class ProfController {
                 }
             }
             catch (err) {
-                console.log(err);
+                res.status(500).json({ success: false, message: 'Internal server error!' });
             }
         });
     }
@@ -133,7 +128,6 @@ class ProfController {
                 }
             }
             catch (err) {
-                console.log(err);
                 res.status(500).json({ success: false, message: 'Internal server error!' });
             }
         });
@@ -142,7 +136,6 @@ class ProfController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const id = req.profId;
-                console.log('id' + id);
                 if (id) {
                     let profdata = yield this.usecase.getProfile(id);
                     res.status(200).json({ success: true, profdata });
@@ -152,7 +145,6 @@ class ProfController {
                 }
             }
             catch (err) {
-                console.log(err);
                 res.status(500).json({ success: false, message: "Internal server error" });
             }
         });
@@ -282,14 +274,13 @@ class ProfController {
                 res.status(200).json({ success: true });
             }
             catch (err) {
-                console.log(err);
+                res.status(500).json({ success: false, message: "Internal server error" });
             }
         });
     }
     forgotPassword(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                console.log('its here.........');
                 let email = req.body.email;
                 const data = yield this.usecase.forgotPassword(email);
                 if (!data.data) {
@@ -309,7 +300,6 @@ class ProfController {
             var _a;
             try {
                 let token = (_a = req.headers.authorization) === null || _a === void 0 ? void 0 : _a.split(' ')[1];
-                console.log('token in controller...', token);
                 let otp = req.body.otp;
                 const result = yield this.usecase.verifyOtpForgotPassword(token, otp);
                 if (result) {
@@ -374,7 +364,6 @@ class ProfController {
                 }
             }
             catch (err) {
-                console.log(err);
                 res.status(500).json({ success: false, message: "Internal server error" });
             }
         });
@@ -414,8 +403,6 @@ class ProfController {
     }
     webhook(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log('in webhook controller');
-            console.log(req.body.type);
             try {
                 switch (req.body.type) {
                     case 'customer.subscription.created':

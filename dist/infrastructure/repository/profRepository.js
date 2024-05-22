@@ -23,7 +23,6 @@ class ProfRepository {
                 return data;
             }
             catch (err) {
-                console.log(err);
                 throw new Error("Failed to fetch data by email");
             }
         });
@@ -36,7 +35,6 @@ class ProfRepository {
                 return newProf;
             }
             catch (err) {
-                console.log(err);
                 throw new Error("Failed to save data");
             }
         });
@@ -51,7 +49,6 @@ class ProfRepository {
                 return data;
             }
             catch (err) {
-                console.log(err);
                 throw new Error("Failed to find data by id");
             }
         });
@@ -63,7 +60,6 @@ class ProfRepository {
                 return data.acknowledged;
             }
             catch (err) {
-                console.log(err);
                 throw new Error("Failed to update data");
             }
         });
@@ -75,7 +71,6 @@ class ProfRepository {
                 return data.acknowledged;
             }
             catch (err) {
-                console.log(err);
                 throw new Error("Failed to update image");
             }
         });
@@ -87,7 +82,6 @@ class ProfRepository {
                 return data.acknowledged;
             }
             catch (err) {
-                console.log(err);
                 throw new Error("Failed to update email");
             }
         });
@@ -99,7 +93,6 @@ class ProfRepository {
                 return data.acknowledged;
             }
             catch (err) {
-                console.log(err);
                 throw new Error("Failed to update password");
             }
         });
@@ -184,11 +177,9 @@ class ProfRepository {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 let result = yield profModel_1.default.updateOne({ email: email }, { $set: { password: password } });
-                console.log(result);
                 return result.acknowledged;
             }
             catch (err) {
-                console.log(err);
                 throw new Error('failed to update password!');
             }
         });

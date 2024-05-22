@@ -17,7 +17,6 @@ class ChatController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 let senderId = req.userId;
-                // let senderId = '66054acff4efb06f3be368e8'
                 const receiverId = req.params.id;
                 if (senderId) {
                     const newConversation = yield this.usecase.saveConversation(senderId, receiverId);

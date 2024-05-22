@@ -18,12 +18,9 @@ class MessageRepository {
     saveMessage(chat) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                console.log('In saveMessage');
                 const newMessage = new messageModel_1.default(chat);
                 yield newMessage.save();
-                let updated = yield conversationModel_1.default.updateOne({ _id: chat.conversationId }, { $set: { updatedAt: Date.now() } });
-                console.log(updated);
-                console.log(newMessage);
+                yield conversationModel_1.default.updateOne({ _id: chat.conversationId }, { $set: { updatedAt: Date.now() } });
                 return newMessage;
             }
             catch (err) {

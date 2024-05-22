@@ -32,7 +32,6 @@ class AdminController {
                 }
             }
             catch (err) {
-                console.log(err);
                 res.status(500).json({ success: false, message: "Internal server error" });
             }
         });
@@ -62,7 +61,6 @@ class AdminController {
                 }
             }
             catch (err) {
-                console.log(err);
                 res.status(500).json({ success: false, message: "Internal server error" });
             }
         });
@@ -71,7 +69,6 @@ class AdminController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 let userId = req.params.id;
-                console.log('userid' + userId);
                 let blocked = yield this.usecase.blockUser(userId);
                 if (blocked) {
                     res.status(200).json({ success: true });
@@ -81,7 +78,6 @@ class AdminController {
                 }
             }
             catch (err) {
-                console.log(err);
                 res.status(500).json({ success: false, message: "Internal server error" });
             }
         });
@@ -100,7 +96,6 @@ class AdminController {
                 }
             }
             catch (err) {
-                console.log(err);
                 res.status(500).json({ success: false, message: "Internal server error" });
             }
         });
@@ -137,7 +132,6 @@ class AdminController {
                 }
             }
             catch (err) {
-                console.log(err);
                 res.status(500).json({ success: false, message: "Internal server error!" });
             }
         });
@@ -145,10 +139,8 @@ class AdminController {
     editCategory(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                console.log('in editcategory controller');
                 let { id, name } = req.body;
                 let image = req.file;
-                console.log(id, name, image);
                 let result = yield this.usecase.editCategory(id, name, image);
                 if (result.success) {
                     res.status(200).json({ success: true });
@@ -166,7 +158,6 @@ class AdminController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 let name = req.body.name;
-                console.log(name);
                 let savedData = yield this.usecase.addJobrole(name);
                 if (savedData.success) {
                     res.status(200).json({ success: true });
@@ -176,7 +167,6 @@ class AdminController {
                 }
             }
             catch (err) {
-                console.log(err);
                 res.status(500).json({ success: false, message: "Internal server error!" });
             }
         });
@@ -207,7 +197,6 @@ class AdminController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 let id = req.params.id;
-                console.log(id);
                 let deleted = yield this.usecase.deleteJobrole(id);
                 if (deleted) {
                     res.status(200).json({ success: true });
@@ -217,7 +206,6 @@ class AdminController {
                 }
             }
             catch (err) {
-                console.log(err);
                 res.status(500).json({ success: false, message: 'Internal server error!' });
             }
         });
@@ -235,7 +223,6 @@ class AdminController {
                 }
             }
             catch (err) {
-                console.log(err);
                 res.status(500).json({ success: false, message: err });
             }
         });
@@ -250,7 +237,7 @@ class AdminController {
                 res.status(200).json({ success: true });
             }
             catch (err) {
-                console.log(err);
+                res.status(500).json({ success: false, message: 'Internal server error!' });
             }
         });
     }

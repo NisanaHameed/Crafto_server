@@ -94,9 +94,7 @@ class ProfUsecase {
                     let hashedP = yield this.hash.hashPassword(decoded.profData.password);
                     profdata.email = decoded.profData.email;
                     profdata.password = hashedP;
-                    console.log(profdata.image);
                     let uploadFile = yield this.cloudinary.uploadToCloud(profdata.image);
-                    console.log('uploaded file' + uploadFile);
                     this.deleteImageFile(filename);
                     profdata.image = uploadFile;
                     let newProf = yield this.profRepository.saveProfessional(profdata);
@@ -113,7 +111,6 @@ class ProfUsecase {
                 }
             }
             catch (err) {
-                console.log(err);
                 throw err;
             }
         });
@@ -153,7 +150,6 @@ class ProfUsecase {
                 }
             }
             catch (err) {
-                console.log(err);
                 throw err;
             }
         });
@@ -172,7 +168,6 @@ class ProfUsecase {
                 }
             }
             catch (err) {
-                console.log(err);
                 throw err;
             }
         });
@@ -184,7 +179,6 @@ class ProfUsecase {
                 return profdata;
             }
             catch (err) {
-                console.log(err);
                 throw err;
             }
         });
@@ -297,7 +291,6 @@ class ProfUsecase {
                     const otp = this.generateOtp.generateOtp();
                     console.log(otp);
                     let token = jsonwebtoken_1.default.sign({ email, otp }, process.env.AUTH_SECRET, { expiresIn: '5m' });
-                    console.log('Created token ', token);
                     yield this.sendMail.sendMail(email, otp);
                     return { data: true, token };
                 }
@@ -310,8 +303,6 @@ class ProfUsecase {
     verifyOtpForgotPassword(token, otp) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                console.log('In verifyOtpForgotPassword usecase');
-                console.log('token...', token);
                 let decoded = yield jsonwebtoken_1.default.verify(token, process.env.AUTH_SECRET);
                 if (decoded.otp !== otp) {
                     return false;
@@ -377,7 +368,6 @@ class ProfUsecase {
                 console.log('in stripe usecase');
                 const prof = yield this.profRepository.findProfById(profId);
                 const stripeRes = yield this.stripe.makePayment(prof.email, plan, profId);
-                // const updateProf = await this.profRepository.updateProfile(profId, { stripeSessionId: stripeRes } as Professional);
                 return stripeRes;
             }
             catch (err) {

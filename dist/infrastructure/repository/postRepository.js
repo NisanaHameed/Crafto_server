@@ -22,7 +22,6 @@ class PostRepository {
                 return (newPost ? true : false);
             }
             catch (err) {
-                console.log(err);
                 throw new Error('Failed to save post!');
             }
         });
@@ -34,7 +33,6 @@ class PostRepository {
                 return postData;
             }
             catch (err) {
-                console.log(err);
                 throw new Error();
             }
         });
@@ -42,12 +40,10 @@ class PostRepository {
     getDesigns(category) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                console.log(category);
                 let designs = yield postModel_1.default.find({ category: category }).populate('profId');
                 return designs;
             }
             catch (err) {
-                console.log(err);
                 throw new Error('Failed to fetch designs!');
             }
         });
@@ -74,7 +70,6 @@ class PostRepository {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 let portraits = yield postModel_1.default.find({ profId: id, isPortrait: true });
-                console.log(portraits);
                 return portraits;
             }
             catch (err) {
@@ -86,7 +81,6 @@ class PostRepository {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const updated = yield postModel_1.default.findOneAndUpdate({ _id: id, 'likes.user': { $ne: userID } }, { $push: { likes: { user: userID, type: role } } }, { new: true });
-                console.log(updated);
                 return updated;
             }
             catch (err) {
@@ -97,9 +91,7 @@ class PostRepository {
     unlikePost(id, userId) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                console.log(id, userId);
                 const updated = yield postModel_1.default.findOneAndUpdate({ _id: id }, { $pull: { likes: { user: userId } } }, { new: true });
-                console.log(updated);
                 return updated;
             }
             catch (err) {
@@ -144,7 +136,6 @@ class PostRepository {
     searchDesigns(searchTerm, category, sort, page, limit) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                console.log('page', page, limit, sort);
                 let query = {};
                 if (searchTerm) {
                     query.$or = [

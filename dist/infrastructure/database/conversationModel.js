@@ -29,16 +29,6 @@ const conversationSchema = new mongoose_1.default.Schema({
         {
             type: mongoose_1.Schema.Types.ObjectId,
             required: true
-            // userId: {
-            //     type: Schema.Types.ObjectId,
-            //     ref: 'userType',
-            //     required: true
-            // },
-            // userType: {
-            //     type: String,
-            //     enum: ['User', 'Professional'],
-            //     required: true
-            // }
         }
     ],
 }, { timestamps: true });

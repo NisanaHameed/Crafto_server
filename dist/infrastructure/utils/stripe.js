@@ -43,7 +43,6 @@ class StripePayment {
                 return session.id;
             }
             catch (error) {
-                console.error('Error creating Stripe checkout session:', error);
                 throw error;
             }
         });
@@ -56,7 +55,6 @@ class StripePayment {
                 return deletedSubscription;
             }
             catch (err) {
-                console.log('Subscription cancellation failed');
                 throw err;
             }
         });
@@ -70,7 +68,7 @@ class StripePayment {
                 return subscriptions;
             }
             catch (err) {
-                console.log('failed to fetch subscriptions');
+                throw err;
             }
         });
     }

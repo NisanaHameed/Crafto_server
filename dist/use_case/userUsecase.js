@@ -44,7 +44,6 @@ class Userusecase {
                 }
             }
             catch (err) {
-                console.log(err);
                 throw err;
             }
         });
@@ -53,7 +52,6 @@ class Userusecase {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 let decoded = this.jwt.verifyToken(token);
-                console.log('decoded', decoded);
                 if (decoded) {
                     if (userOtp == decoded.otp) {
                         let hashedP = yield this.hash.hashPassword(decoded.userData.password);
@@ -76,7 +74,6 @@ class Userusecase {
                 }
             }
             catch (err) {
-                console.log(err);
                 throw err;
             }
         });
@@ -118,7 +115,6 @@ class Userusecase {
                 }
             }
             catch (err) {
-                console.log(err);
                 throw err;
             }
         });
@@ -143,7 +139,6 @@ class Userusecase {
                 }
             }
             catch (err) {
-                console.log(err);
                 throw err;
             }
         });
@@ -155,7 +150,6 @@ class Userusecase {
                 return userdata;
             }
             catch (err) {
-                console.log(err);
                 throw err;
             }
         });
@@ -173,7 +167,6 @@ class Userusecase {
                 return res;
             }
             catch (err) {
-                console.log(err);
                 throw err;
             }
         });

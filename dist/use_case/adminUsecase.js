@@ -38,7 +38,6 @@ class AdminUsecase {
                 }
             }
             catch (err) {
-                console.log(err);
                 throw err;
             }
         });
@@ -57,7 +56,6 @@ class AdminUsecase {
                     acc[date] += amount;
                     return acc;
                 }, {});
-                console.log('revenue', revenue);
                 const totalRevenue = revenue / 100;
                 const data = yield this.repository.getDashboardDetails();
                 const result = Object.assign(Object.assign({}, data), { totalRevenue, revenueByDate });
@@ -75,7 +73,6 @@ class AdminUsecase {
                 return users;
             }
             catch (err) {
-                console.log(err);
                 throw err;
             }
         });
@@ -87,7 +84,6 @@ class AdminUsecase {
                 return blocked;
             }
             catch (err) {
-                console.log(err);
                 throw err;
             }
         });
@@ -99,7 +95,6 @@ class AdminUsecase {
                 return profs;
             }
             catch (err) {
-                console.log(err);
                 throw err;
             }
         });
@@ -111,7 +106,6 @@ class AdminUsecase {
                 return blocked;
             }
             catch (err) {
-                console.log(err);
                 throw err;
             }
         });

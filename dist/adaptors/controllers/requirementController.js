@@ -21,7 +21,6 @@ class RequirementController {
                 reqs.userId = id;
                 reqs.createdAt = Date.now();
                 let result = yield this.usecase.saveReq(reqs);
-                console.log(result);
                 if (result) {
                     res.status(200).json({ success: true, requirement: result });
                 }

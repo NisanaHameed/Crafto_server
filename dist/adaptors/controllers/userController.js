@@ -40,9 +40,7 @@ class UserController {
         return __awaiter(this, void 0, void 0, function* () {
             var _a;
             try {
-                console.log('in verifyotp');
                 let token = (_a = req.headers.authorization) === null || _a === void 0 ? void 0 : _a.split(' ')[1];
-                console.log('token' + token);
                 let userOtp = req.body.otp;
                 let saveduser = yield this.Userusecase.saveUSer(token, userOtp);
                 if (saveduser.success) {
@@ -59,7 +57,6 @@ class UserController {
                 }
             }
             catch (err) {
-                console.log(err);
                 res.status(500).json({ success: false, message: 'Internal server error!' });
             }
         });
@@ -97,7 +94,6 @@ class UserController {
                 }
             }
             catch (err) {
-                console.log(err);
                 res.status(500).json({ message: 'Internal server error' });
             }
         });
@@ -123,7 +119,7 @@ class UserController {
                 }
             }
             catch (err) {
-                console.log(err);
+                res.status(500).json({ message: 'Internal server error' });
             }
         });
     }
@@ -140,7 +136,6 @@ class UserController {
                 }
             }
             catch (err) {
-                console.log(err);
                 res.status(500).json({ success: false, message: 'Internal server error!' });
             }
         });
@@ -168,7 +163,6 @@ class UserController {
                 }
             }
             catch (err) {
-                console.log(err);
                 res.status(500).json({ success: false, message: "Internal server error!" });
             }
         });
@@ -200,7 +194,7 @@ class UserController {
                 res.status(200).json({ success: true });
             }
             catch (err) {
-                console.log(err);
+                res.status(500).json({ success: false, message: "Internal server error!" });
             }
         });
     }
@@ -226,7 +220,6 @@ class UserController {
     unfollowProfessional(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                console.log('in unfollow controller fn');
                 let userId = req.userId;
                 let profId = req.body.profId;
                 const unfollowed = yield this.Userusecase.unfollowProfessional(profId, userId);
@@ -264,7 +257,6 @@ class UserController {
     forgotPassword(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                console.log('in Forgot password controller');
                 let email = req.body.email;
                 const data = yield this.Userusecase.forgotPassword(email);
                 if (!data.data) {
@@ -284,7 +276,6 @@ class UserController {
             var _a;
             try {
                 let token = (_a = req.headers.authorization) === null || _a === void 0 ? void 0 : _a.split(' ')[1];
-                console.log(token);
                 let otp = req.body.otp;
                 const result = yield this.Userusecase.verifyOtpForgotPassword(token, otp);
                 if (result) {

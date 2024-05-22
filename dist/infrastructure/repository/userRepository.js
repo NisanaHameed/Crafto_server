@@ -23,7 +23,6 @@ class UserRepository {
                 return userCheck ? userCheck.toObject() : null;
             }
             catch (err) {
-                console.error(`Error in findByEmail for email ${email}:`, err);
                 throw new Error('Failed to fetch user by email');
             }
         });
@@ -36,7 +35,6 @@ class UserRepository {
                 return newUser ? newUser.toObject() : null;
             }
             catch (err) {
-                console.log(err);
                 throw new Error('Failed to save user');
             }
         });
@@ -51,7 +49,6 @@ class UserRepository {
                 return userdata;
             }
             catch (err) {
-                console.log(err);
                 throw new Error("Failed to find user");
             }
         });
@@ -60,11 +57,9 @@ class UserRepository {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 let updatedUser = yield userModel_1.default.updateOne({ _id: id }, userdata, { new: true });
-                console.log(updatedUser);
                 return updatedUser.acknowledged;
             }
             catch (err) {
-                console.log(err);
                 throw new Error("Failed to update user");
             }
         });
@@ -120,11 +115,9 @@ class UserRepository {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 let result = yield userModel_1.default.updateOne({ email: email }, { $set: { password: password } });
-                console.log(result);
                 return result.acknowledged;
             }
             catch (err) {
-                console.log(err);
                 throw new Error('failed to update password!');
             }
         });

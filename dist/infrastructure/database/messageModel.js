@@ -30,21 +30,6 @@ const messageSchema = new mongoose_1.Schema({
         refPath: 'Professional',
         required: true
     },
-    // receiver: {
-    //     type: Schema.Types.ObjectId,
-    //     refPath: 'receiverType',
-    //     required: true
-    // },
-    // senderType: {
-    //     type: String,
-    //     enum: ['User', 'Professional'],
-    //     required: true
-    // },
-    // receiverType: {
-    //     type: String,
-    //     enum: ['User', 'Professional'],
-    //     required: true
-    // },
     text: {
         type: String,
         required: true
